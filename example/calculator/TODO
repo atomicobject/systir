@@ -1,0 +1,9 @@
+Sat Jan 15 22:38:11 EST 2005
+crosby
+
+Copy in the calc stuff from proto.
+But simplify it greatly.
+
+The dc example should be the simple example for Systir; leave complexity to Mondo Pizza sample.
+
+Need to decide on a specific testing approach for dc; current test scripts operate on several levels of abstraction.
