@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 
+$LOAD_PATH << File.dirname(__FILE__) + "/lib"
 require 'systir'
 require 'pizza_driver'
 

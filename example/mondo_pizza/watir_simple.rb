@@ -397,6 +397,12 @@ module Watir
 	end
 
 
+  # Fill a single textfield with a value
+	def fill_text_field(field_name, text)
+		@@browser.textField(:name, field_name).set(text)
+	end
+
+
   # Some browsers (i.e. IE) need to be waited on before more actions can be
   # performed.  Most action methods in Watir::Simple already call this before
   # and after.

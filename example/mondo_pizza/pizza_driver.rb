@@ -1,18 +1,22 @@
 require 'watir'
+require 'watir_simple'
 require 'soap/rpc/standaloneServer'
+$LOAD_PATH << File.dirname(__FILE__) + "/lib"
 require 'systir'
 
 $siteUrl = "http://localhost:12000/app"
 
-class PizzaDriver < LanguageDriver 
-
+class PizzaDriver < Systir::LanguageDriver
+  
+  include Watir::Simple
+  
 	def setup
     #hide_browsers
     new_browser_at $siteUrl
 	end
 
 	def teardown
-		close_browser_quick
+		close_browser
 	end
 
   def goto_login_page
@@ -37,13 +41,12 @@ class PizzaDriver < LanguageDriver
   def add_topping(topping)
     fill_text_field "toppings", topping
     click_button_with_id "add_topping_id"
-    wait_for_browser
     assert_text_in_body topping
   end
 end
 
 class PizzaHelper
-  include AOWatir
+  include Watir::Simple
 	include Test::Unit::Assertions
 
 	def initialize(ie)
@@ -55,7 +58,6 @@ class LoginPage < PizzaHelper
   def login_as(user)
     fill_text_field "loginname", "karlin"
     click_button_with_id "login"
-    wait_for_browser
   end
 end
 
