@@ -1,6 +1,6 @@
 * systir.rb
   
-
+* Helper should have an associate_helper() method that calls driver.associate_helper(obj)
 
 * BLOCK_ASSERTIONS and ALLOW_MISSING_METHODS magic are stored
   in the proto/lib/test/system.rb file.
