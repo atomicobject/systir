@@ -1,6 +1,5 @@
 #!/usr/bin/ruby 
 
-require 'test/unit'
 require 'find'
 
 proj_dir = File.dirname(__FILE__)
@@ -18,6 +17,8 @@ def each_testcase_name(fname)
 		end
 	end
 end
+
+require 'test/unit/ui/console/testrunner'
 
 suite = Test::Unit::TestSuite.new
 Find.find("#{proj_dir}/test") do |fname|
