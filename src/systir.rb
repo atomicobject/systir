@@ -213,6 +213,38 @@ module Systir
 			@_driver = dr
 		end
 		
+		# == Description
+		# Installs a back-reference from this Driver instance into the specified Helper
+		# and returns a reference to that Helper.  Typically thismethod is called
+		# on the same line you return the helper from once it's built.
+		#
+		# == Params
+		# +helper+ :: The Helper instance you're handing control over to
+		#
+		# == Return
+		# The same +helper+ reference that was sent in as a parameter.
+		# 
+		# == Details
+		#
+		# Since Helpers are usually built as support for domain-level syntax,
+		# they usually require a direct reference to macro functions built into
+		# the driver.  Additionally, the Helper may need to make assertions
+		# defined in the driver, or test/unit itself, and only the Driver may
+		# count assertions; the Helper must use a special internal implementation
+		# of 'add_assertion' in order to increment the test's assertion count.
+		#
+		# Some aliases have been added to aid readability
+		#
+		def associate_helper(helper)
+			unless helper.respond_to? :driver=
+				raise "helper doesn't support 'driver=' method"
+			end
+			helper.driver = self.driver
+			return helper
+		end
+		alias_method :return_helper, :associate_helper
+		alias_method :hand_off_to, :associate_helper
+		
 		# 
 		# Redirects assertion counting into our owning LanguageDriver.
 		# Assertions module will automatically attempt to store the count
@@ -225,6 +257,5 @@ module Systir
 			end
 			driver.collect_assertion
 		end
-
 	end
 end
