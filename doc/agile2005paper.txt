@@ -32,13 +32,23 @@ Enter the Toolsmith[3].  A Toolsmith is a developer who writes software for othe
 Ruby has become known for it's applicability in domain-specific languages.  Ruby's dynamic typing and object-oriented self-modification allows it's users to quickly create customized languages that read like natural language.  It's =perl=-inspired relaxed syntax allows for freedoms that aid in readability without sacrificing capability.  Optional semicolons and parentheses are an example of this.  Dave Thomas of the Pragmatic Programmers has highlighted Ruby's use as a generative language, saying "Ruby
 
 ---++ Save me, SYSTIR
-(intro to systir, brief history
+(intro to systir, brief history)
 
----++ 
+---++ SYSTIR supports tester/toolsmith
+
+---++ SYSTIR supports reuse
+(about building reusable, generic-enough SYSTIR drivers)
+
+---++ SYSTIR on Display
+(Example data, WATIR integration, AWTA)
+
+---++ SYSTIR's future
+(reporting, bundled driveers, whatever else we think we'll do)
 
 ---++ References
 
 [1] Selenium
 [2] FITnesse
 [3] Jargon file
-[4] Brett's vendorscript paper 
+[4] Brett's vendorscript paper
+more of course
