@@ -8,14 +8,23 @@
 #
 # The breakdown of using Systir for test automation is:
 # 1. Tester defines test steps using project- and technology-specific language.
-#    * Tests are written in files like +authentication+.+test+ and +order_placement+.+test+
+#    * Tests are written in files like +authentication+.+test+ and 
+#      +order_placement+.+test+
 # 2. The Toolsmith implements a driver to support the syntax of that language
-#    * In a project-specific module, the Toolsmith writes an extension of the Systir::LanguageDriver class to support the macros used in *.test
-# 3. The Tester's "scripts" are gathered up by Systir, executed, and a report is generated.
-#    * Toolsmith writes a short script which uses Systest::Launcher to compose *.test files into a suite for execution.
+#    * In a project-specific module, the Toolsmith writes an extension of the 
+#      Systir::LanguageDriver class to support the macros used in *.test
+# 3. The Tester's "scripts" are gathered up by Systir, executed, and a report 
+#    is generated.
+#    * Toolsmith writes a short script which uses Systest::Launcher to compose 
+#      *.test files into a suite for execution.
 #
 # = TECHNICAL NOTE
-# Under the hood, Systir is an extension of Test::Unit.  The output from executing the test suite should therefor be familiar to a Ruby coder.  Additionally, it might be educational to the Toolsmith to understand that LanguageDriver is a derivative of Test::Unit::TestCase, and that all *.test files become test methods inside the TestCase which is then composed as a Test::Unit::TestSuite
+# Under the hood, Systir is an extension of Test::Unit.  The output from 
+# executing the test suite should therefor be familiar to a Ruby coder.  
+# Additionally, it might be educational to the Toolsmith to understand that 
+# LanguageDriver is a derivative of Test::Unit::TestCase, and that all *.test 
+# files become test methods inside the TestCase which is then composed as a 
+# Test::Unit::TestSuite
 # 
 
 require 'test/unit'
@@ -46,7 +55,7 @@ module Systir
 
 		# == Description
 		# Installs a back-reference from this Driver instance into the specified Helper
-		# and returns a reference to that Helper.  Typically thie method is called
+		# and returns a reference to that Helper.  Typically thismethod is called
 		# on the same line you return the helper from once it's built.
 		#
 		# == Params
@@ -116,7 +125,7 @@ module Systir
 
 		#
 		# (INTERNAL USE)
-		# Read contents from_file, wrap text in 'def', 
+		# Read contents of from_file, wrap text in 'def', 
 		# add the resulting code as a new method on the given class
 		# 
 		def self.import_test(to_class, from_file)
@@ -157,7 +166,8 @@ module Systir
 		#
 		def driver
 			unless @_driver
-				raise "helper has no back reference to the driver! The driver should have used hand_of_to()"
+				raise "helper has no back reference to the driver! " +
+					"The driver should have used hand_of_to()"
 			end
 			return @_driver
 
