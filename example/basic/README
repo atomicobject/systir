@@ -1,0 +1,16 @@
+This is an extremely basic sanity check that shows how you might set up an automated system test suite.
+
+sanity.test
+  The system test
+
+run_test.rb
+  Harness for launching a system test.  
+  Execute by passing it the file name of a test, eg:
+    bash$ ruby run_test.rb sanity.test
+
+basic_driver.rb
+  The implementation of the Systir::LanguageDriver for this test suite.
+  This is where you define the language constructs needed by your tests.
+  Systir drivers inherit semantics of a Test::Unit::TestCase; you may invoke
+    assertions and utilize setup and teardown methods.
+
