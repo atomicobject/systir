@@ -1,0 +1,12 @@
+#
+
+use_precision 4
+
+'1 3 /'.should_give 0.3333
+'5 4 /'.should_give 1.25
+'4 5 /'.should_give 0.8
+'1.2 3.4 *'.should_give 4.08
+
+use_precision 12
+'1 3 /'.should_give 0.333333333333
+

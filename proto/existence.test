@@ -1,0 +1,3 @@
+# Verify existence and usability of 'dc' command:
+
+verify_expression('6 7 *').gives '42'

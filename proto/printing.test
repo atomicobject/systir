@@ -1,0 +1,37 @@
+#
+
+# Configure the calc test driver to keep the dc process running.
+# This allows us to alter and verify stack state from one test assertion to the next.
+use_same_calculator_for_whole_test
+
+#
+# 'f' command
+# Prints the entire contents of the stack without altering anything. This is a
+# good command to use if you are lost or want to figure out what the effect of
+# some command has been.
+assume_stack '42 1 100.1' 
+
+verify_expression('f').gives_assumed_stack
+verify_stack_is_unchanged
+
+#
+# Command 'p' 
+# Prints the value on the top of the stack, without altering the stack. A
+# newline is printed after the value.
+#
+assume_stack '1 2 3'
+
+verify_expression('p').gives '3'
+verify_stack_is_unchanged
+
+#
+# Command 'P' 
+# Pops off the value on top of the stack.
+assume_stack '1 2 3'
+
+verify_expression('P').gives_nothing
+verify_stack_is '1 2'
+verify_expression('P').gives_nothing
+verify_stack_is '1'
+verify_expression('P').gives_nothing
+verify_stack_is_empty

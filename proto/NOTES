@@ -1,0 +1,61 @@
+Thu Jan  6 02:08:49 EST 2005
+David Crosby
+
+Blurbs.  Trying to succinctly describe the purpose and value of test/system.
+
+---
+
+The goal of test/system is to close the gap between dev and test by:
+	- providing concrete dev/test collaboration
+	- allowing testers to design and maintain automated tests without "really programming"
+	- providing Toolsmiths with a lightweight tool to create domain-level language
+	- providing a lightweight framework for collecting and running tests.
+
+A Toolsmith is either:
+  a) a developer with testing savy, or
+	b) a tester with development savy
+
+Even without a formal Tester persona, test/system is still of great value to the dev-tester.
+You are constantly reminded that you're playing the Tester role, so THINK like a TESTER.
+(Write tests, not programs)
+
+test/system has been used on a real project with satisfying results.
+The time cost was low, the return in expressiveness and maintainability was high.
+
+This example illustrates the ease with which a domain-level test language can be created,
+even without an already-built tool such as WATIR. 
+
+
+The tester can design tests in her preferred fashion.
+When she identifies areas suitable for automation, she simply narrates her test
+instructions in project/task specific language.  The Toolsmith responds by
+creating that language via a driver class that plugs in to the test/system
+framework.
+
+The value gained from this is that tests are expressed in such a way as to be non-fragile,
+eg, product implementation details shouldn't affect the design of the test.
+Test cases can be read, reviewed and refactored by humans very easily.
+By driving test automation directly from these narrations, the narrations are guarenteed
+to be "real" -- no "doc drift" can occur.
+
+Testers work ahead of the Toolsmith - new or revised test cases are written in language that
+may not be supported.  Sounds corny, but the tester is free to be as direct as
+possible without feeling constrained by a learning curve or inadequately
+featured language.
+
+By defining test cases in advance using domain-specific language, the requirements
+placed on the Toolsmith are clearly defined.  We avoid making tools that are
+too general -- a too-general feature set places too high a demand on a tester
+to learn a "mini language" with things like variable assignment, loops,
+imperitive coding, etc.  
+
+Tool code stays "codey"; Test code stays "talky".  The Toolsmith can write the
+internal driver code without worrying about "keeping it easy" for a tester.
+The tester can define test cases without learning how to puzzle-piece a
+minilanguage together.
+
+
+
+
+
+

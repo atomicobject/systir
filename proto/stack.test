@@ -1,0 +1,10 @@
+#
+start_calculator
+
+verify_input('6 7 *').yields_nothing
+verify_input('p').yields '42'
+verify_input('p').yields '42'
+verify_input('p').yields '42'
+
+
+stop_calculator

@@ -1,0 +1,13 @@
+# Verify existence and usability of 'dc' command:
+
+verify_calc_exists
+
+verify_input('6 7 *').produces_output('42')
+verify_input('7 6 *').produces_output('42')
+
+in_calc do 
+ 	5 + 4
+end
+
+verify_output_is 9
+
