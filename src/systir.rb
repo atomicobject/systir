@@ -42,16 +42,6 @@ module Systir
 	# contain user code written to support more macro-fied testing scripts.
 	#
 	class LanguageDriver < Test::Unit::TestCase
-		#include CatchallMethod
-
-		# (INTERNAL USE) 
-		# Sneaky trick to expose the private mix-in method +add_assertion+ from
-		# Test::Unit::Assertions.  Helpers derivatives that make assertions are
-		# able to have them counted because of this method.  
-		# (See associate_helper.)
-		def collect_assertion
-			add_assertion
-		end
 
 		# == Description
 		# Installs a back-reference from this Driver instance into the specified Helper
@@ -85,50 +75,27 @@ module Systir
 		alias_method :return_helper, :associate_helper
 		alias_method :hand_off_to, :associate_helper
 
+		# (INTERNAL USE) 
+		# Sneaky trick to expose the private mix-in method +add_assertion+ from
+		# Test::Unit::Assertions.  Helpers derivatives that make assertions are
+		# able to have them counted because of this method.  
+		# (See associate_helper.)
+		def collect_assertion
+			add_assertion
+		end
 	end
 
-	# = Description
-	# Launcher is the utility for launching system test scripts.
-	#
-	module Launcher
-
-		# 
-		# Find and run all the system test scripts in the given directory.
-		# Tests are identified by the .test file extension.
-		#
-		def self.find_and_run_all_tests(driver_class, dir='.')
-			Find.find(dir) do |path|
-				if File.basename(path) =~ /\.test$/
-					import_test driver_class,path
-				end
-			end
-
-			Test::Unit::UI::Console::TestRunner.run(driver_class.suite)
+	# = Description 
+	#	Imports test scripts into the given driver class
+	# and produces a TestSuite ready for execution
+	class Builder
+		def initialize(driver_class)
+		  @driver_class = driver_class
 		end
 
-		#
-		# Run a specific test.  
-		#
-		def self.run_test(driver_class, test_filename)
-			import_test driver_class,test_file
-			Test::Unit::UI::Console::TestRunner.run driver_class.suite
-		end
-
-		#
-		# Run a specific list of tests
-		#
-		def self.run_test_list(driver_class, test_filename_list)
-			test_file_list.each do |path|
-				import_test driver_class,path
-			end
-		end
-
-		#
-		# (INTERNAL USE)
-		# Read contents of from_file, wrap text in 'def', 
-		# add the resulting code as a new method on the given class
-		# 
-		def self.import_test(to_class, from_file)
+		# Read contents from_file, wrap text in 'def', 
+		# add the resulting code as a new method on the target driver class
+		def import_test(from_file)
 			# Determine test and file names
 			base = File.basename(from_file)
 			base_minus_ext = base.sub(/\.test$/, '')
@@ -139,10 +106,77 @@ module Systir
 			text = "def test_#{base_minus_ext}\n#{text}\nend\n";
 			
 			# Dynamically define the method:
-			to_class.class_eval(text, base, 0)
+			@driver_class.class_eval(text, base, 0)
 		end
 
+		# Produce the test suite for our driver class
+		def suite
+		  @driver_class.suite
+		end
+
+		def suite_for_directory(dir)
+			Find.find(dir) do |path|
+				if File.basename(path) =~ /\.test$/
+					import_test path 
+				end
+				if File.directory? path
+				  next
+				end
+			end
+			return suite
+		end
+
+		def suite_for_file(filename)
+			import_test filename
+			return suite
+		end
+
+		def suite_for_list(file_list)
+			file_list.each do |path|
+				import_test path
+			end
+			return suite
+		end
 	end
+
+	# = Description
+	# Launcher is the utility for launching Systir test scripts.
+	#
+	class Launcher
+
+		# 
+		# Find and run all the system test scripts in the given directory.
+		# Tests are identified by the .test file extension.
+		#
+		def find_and_run_all_tests(driver_class, dir='.')
+			b = Builder.new(driver_class)
+			execute b.suite_for_directory(dir)
+		end
+
+		#
+		# Run a specific test.  
+		#
+		def run_test(driver_class, filename)
+			b = Builder.new(driver_class)
+			execute b.suite_for_file(filename)
+		end
+
+		#
+		# Run a specific list of tests
+		#
+		def run_test_list(driver_class, file_list)
+			b = Builder.new(driver_class)
+			execute b.suite_for_list(file_list)
+		end
+
+		#
+		# Use console test runner to execute the given suite
+		#
+		def execute(suite)
+			Test::Unit::UI::Console::TestRunner.run(suite)
+		end
+	end
+
 
 	# = DESCRIPTION 
 	# Systir::Helper is a module intended for mixing-in to classes defined 
@@ -158,7 +192,7 @@ module Systir
 		# or Systir::LanguageDriver.associate_helper
 		# 
 		def initialize(driver=nil)
-			
+			@_driver = driver
 		end
 
 		#
@@ -166,11 +200,9 @@ module Systir
 		#
 		def driver
 			unless @_driver
-				raise "helper has no back reference to the driver! " +
-					"The driver should have used hand_of_to()"
+				raise "Implementation error: helper has no back reference to the language driver!" 
 			end
 			return @_driver
-
 		end
 
 		#
@@ -188,11 +220,10 @@ module Systir
 		#
 		private
 		def add_assertion
-			if driver
-				driver.collect_assertion
-			else
-				raise "assertion made outside the context of a Driver or TestCase"
+			unless driver.respond_to? :collect_assertion
+				raise "Implementation error: driver needs a 'collect_assertion' method"
 			end
+			driver.collect_assertion
 		end
 
 	end

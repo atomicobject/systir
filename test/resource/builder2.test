@@ -1,0 +1,4 @@
+
+
+#The following line is line 4:
+raise "the error" 
