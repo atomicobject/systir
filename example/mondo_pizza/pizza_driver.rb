@@ -1,9 +1,10 @@
 require 'ao_watir'
 require 'soap/rpc/standaloneServer'
+require 'systir'
 
 $siteUrl = "http://localhost:12000/app"
 
-class PizzaDriver < SystestDriver 
+class PizzaDriver < LanguageDriver 
 
 	def setup
     #hide_browsers

@@ -1,8 +1,6 @@
 #!/usr/bin/ruby
 
-require 'systest_launcher'
+require 'systir'
 require 'pizza_driver'
 
-ARGV.each do |f|
-  SystestLauncher.runtest(PizzaDriver, f)
-end
+Systir::Launcher.new.find_and_run_all_tests(PizzaDriver)
