@@ -1,0 +1,11 @@
+* systir.rb
+  
+	Still coded as if it were Test::System; needs to be reworded.
+
+	Tidy up the rdoc
+
+
+* BLOCK_ASSERTIONS and ALLOW_MISSING_METHODS magic are stored
+  in the proto/lib/test/system.rb file.
+	Theory and usefulness of this feature are not definite, let's 
+	leave it out until we need it.
