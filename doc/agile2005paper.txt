@@ -13,7 +13,6 @@ Test automation suites that instead provide their own scripting languages do lit
 Other test automation systems implement what Danny Faught calls "keyword" testing.  Systems such as FITnesse, CompuWare(what?) and Selenium are examples.  They provide a set of simple "keywords" to describe test actions.  Tests are often represented in a table structure, sometimes in actual spreadsheets.  While tests allow a very small set of operations, they usually offer much easier writeability.  Many offer strong data parameterization capabilities.  
 
 ---++ Tester And Toolsmith
-(desc. of tester/toolsmith relationship)
 
 Too many custom domain-specific languages require test writers to write code.  Testers are not always trained to utilize development techniques such as encapsulation or polymorphism, however.  Keyword testing only offers a solution at the cost of flexibility.  The result is that the test scripts written remain just that: scripts.  They cannot be reused outside of their original context.  Vendorscript language implementors try to counteract this frailty by adding features such as macro processing or bolted-on object oriented features.  The languages grow so that the most powerful tend to be too complex for testers to apply efficiently.  The ones that aren't too large are usually too limited.  Something is needed to help the testers strike a balance between test flexibility and test component reuse.
 
@@ -21,27 +20,56 @@ Enter the Toolsmith[3].  A Toolsmith is a developer who writes software for othe
 
 This relationship proves ideal for both people involved.  Developers would rather write "interesting" code that solves specific problems.  Testers would rather write interesting test cases that challenge the AUT and excercise its functionality.
 
----++ What makes ruby a good choice
+---++ What makes Ruby a good choice
 
-An open source Ruby has become known for its applicability in domain-specific languages.  Ruby's dynamic typing and object-oriented self-modification allows its users to quickly create customized languages that read like natural language.  It's =perl=-inspired relaxed syntax allows for freedoms that aid in readability without sacrificing capability.  Optional semicolons and parentheses are an example of this.  Dave Thomas of the Pragmatic Programmers has highlighted Ruby's use as a generative language.
+The open source language named Ruby has become known for its applicability in domain-specific languages.  Ruby's dynamic typing and object-oriented self-modification allows its users to quickly create customized languages that read like natural language.  It's perl-inspired relaxed syntax allows for freedoms that aid in readability without sacrificing capability.  Optional semicolons and parentheses are an example of this.  Dave Thomas of the Pragmatic Programmers has highlighted Ruby's use as a generative language.
 
 <blockquote>
    "With Ruby you write programs close to the problem domain. Rather than constantly mapping your ideas and designs down to the pedestrian level of most languages, with Ruby you'll find you can express them directly and express them elegantly. This means you code faster. It also means your programs stay readable and maintainable."
 </blockquote>
 
 ---++ Save me, SYSTIR
-SYSTIR implements a system test autmation framework that is both simple to extend and simple to use without requiring testers to learn a proprietary script language.  The actual SYSTIR project is very light on code yet heavy on idealogy.  It provides a simple test aggregation mechanism,
+SYSTIR implements a system test autmation framework that is both simple to extend and simple to use without requiring testers to learn a proprietary script language.  The actual SYSTIR project is very light on code.  It provides a simple test aggregation mechanism that will find and execute files with a particular extension.  These files are the tests in the suite.  Test files contain real ruby code that gets loaded and executed by SYSTIR.  As an example, let's suppose that we wanted to test a webpage that required the user to login.  Once logged in, the user will see their name in the title of the page to show that they logged in successfully.  The following is an possible SYSTIR script for a system test scenario in this problem domain:
+
+<verbatim>
+login_as "joe"
+see_that_title_contains "Joe"
+</verbatim> 
+
+This test script would ideally be written by the tester early in the development of the project, probably before much code was written to support the test actions.  In this way, the system test scripts become a guide for developers as well as a validation tool of their work.  Some projects may even allow for the customer or end user themeselves to write the system test scripts.  They could simply be asked to write down in natural language what it is they want their application to do.  A tester will insert various assertive statements and hand it off to the Toolsmith to implement.
 
 ---++ SYSTIR supports tester/toolsmith
+SYSTIR alone provides you with a bare minimum framework to get started writing automated system tests.  The next step is getting a Toolsmith together with the tester.  The Toolsmiths job is to write a SYSTIR *driver*.  This usually means a single Ruby script that acts as a front-end for all the operations of the ensuing tests.  The driver will typically use other Ruby classes that represent objects in the problem domain.  Here is a driver for the test scenario above:
+
+<verbatim>
+class SampleDriver
+    def login_as(name)
+        login_page = LoginPage.new
+        login_page.fill_login_field name
+        login_page.submit
+    end
+
+    def see_that_title_contains(string)
+        title_page = TitlePage.new
+        title_text = title_page.title
+        assert title_text =~ /string/, "String #{string} not found in title."
+    end
+end
+</verbatim>
+
+This code implements the commands used in the above test script.  Notice that the commands are implemented with heavy reliance on other classes.  The =LoginPage= and =TitlePage= classes would also be written by the toolsmith and would provide the driver class with a domain representation to manipulate.  The idea here is to create an object layer to represent the system so that driver code is above the level of instrumentation and into direction.  The driver class shoulnd't contain code to find a link on a menu forinstance.  Instead, a helper class would be made to represent the menu first.  The driver would use an instance of =Menu= then to click on a link, probably using a parameter from a higher-level test script command such as =click_menu_item(name)=.
 
 ---++ SYSTIR supports reuse
-(about building reusable, generic-enough SYSTIR drivers)
+
+Much of SYSTIR's power comes from its flexibility.  Its users are expected to build up a domain language in order to test their applications.  This test language will be reusable in the application as more test cases are extrapolated or as the application grows and undergoes change.  This allows the language to become only as flexbile as necessary.  If different application needs to be tested, there is little reason to try and fit the problem into the existing testing language.  
 
 ---++ SYSTIR on Display
 (Example data, WATIR integration, AWTA)
 
 ---++ SYSTIR's future
-(reporting, bundled driveers, whatever else we think we'll do)
+
+SYSTIR is still early in its development at the time of this writing.  Planned features include a web-based reporting layer that allows its users to easily recognize and track test results.
+(more)
 
 ---++ References
 
