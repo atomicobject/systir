@@ -1,20 +1,44 @@
 ---+ Domain-Specific System Test Automation with SYSTIR
 (summary)
+
 In this paper we present a new system testing framework that encourages a handful of recent ideas in the realm of automated system testing.
 
----++ What we have now
+---++ What We Have Now
 (Intro, common tools)
-Modern frameworks for automated system testing often fall into two categories.  Some are capture/replay-based systems that allow testing of applications by recording a users actions and allowing automated replay and verification of the results.  Other systems provide a vendor-specific language to write high-level scripts that describe system test cases.  Many are hybrids of the two, recording scripts using a high-level language that allows hand customization or even data-driven parameterization.
 
+Modern frameworks for automated system testing fall into three categories.  Some are capture/replay-based systems.  These require recording a user's actions and allow automated replay and verification of the results.  Some provide a vendor-specific language to write high-level scripts that describe test cases.  Finally, recent test automation frameworks [1][2] allow table- or keyword-based test descriptions that usually form a more data-driven approach utilizing a rigid, minimal syntax.  Even hybrids of these types exist,  such as recording scripts using a high-level language that allows hand customization or even data-driven parameterization.
+
+(capture/replay desc.)
+
+The first category, capture/replay systems (also known as record/playback,) tout their ease-of-use and short test authoring times.  They allow large feature coverage only for a specific build of the application under test (AUT).  Subsequent changes to the AUT will require re-recording the scripts because of a close coupling to the presentation layer. Prominent software testing consultant and co-auther of _Lessons Learned in Software Testing_, Brett Pettichord remarked in 2001 that "record and playback tools provide an easy way to create throwaway testsuites."	Recordings of an application can only be created once the application is actually built.
+
+(VSL desc.)
+
+Test automation suites that instead provide their own scripting languages do little to address these problems.  We call these Vendor-Specific Languages (VSLs, also known as vendorscripts[4].)  They tout flexibility and easy-to-learn syntax.  They provide a micro-language for testers, usually including assertion keywords and simple looping constructs.  They offer greater data parameterization over capture/replay by replacing user input with stored data sets.  However, it's still up to testers to connect the testing languages abilities to their problem space.  The resulting glue code can become the hardest to maintain as developers provide a moving target AUT for testers to attach suites to.  VSLs are also fragile in the same way that capture/replay systems are.  They are written against an existing build and are closely coupled to the presentation layer.
+
+(keyword desc.)
+
+Other test automation systems take a more language- or keyword-based approach.  Suites such as FITnesse, CompuWare(what?) and Selenium provide a set of simple "keywords"
+
+...
+
+---++ Tester And Toolsmith
+(desc. of tester/toolsmith relationship)
+
+Too many custom domain-specific languages require authors to write code.  Testers are often not skilled enough to utilize development techniques such as encapsulation or polymorphism.  Keyword testing offers a solution at the cost of flexibility.  The result is that most automated test scripts written with these systems are just that: scripts.  They cannot be reused outside of their original context.  Language implementors try to counteract this frailty by adding features such as macro processing or bolted-on object oriented features.  The languages grow so that the most powerful tend to be too complex for testers to apply efficiently.
+
+Enter the Toolsmith[3].  A Toolsmith is a developer who writes software for other developers.  In our case, the other developer is instead a tester.  Why try to build a simple language for non-developers to use with features powerful enough to compare to custom solutions
 ---++ What makes ruby a good choice
 Ruby has become known for it's applicability in domain-specific languages.  Ruby's dynamic typing and object-oriented self-modification allows it's users to quickly create customized languages that read like natural language.  It's =perl=-inspired relaxed syntax allows for freedoms that aid in readability without sacrificing capability.  Optional semicolons and parentheses are an example of this.  Dave Thomas of the Pragmatic Programmers has highlighted Ruby's use as a generative language, saying "Ruby
 
----++ DSLs
-(define, explain, applications)
-
-Domain-specific languages (DSLs) are useful for describing a system test case in the language of the problem domain.  Using a general-purpose lanugage for such a task requires building libraries from scratch to support the language of the problem space.
+---++ Save me, SYSTIR
+(intro to systir, brief history
 
 ---++ 
-As test-driven development gains support we see a slew of commercial testing tools that feature vendor-specific scripting languages.  These languages are typically hard to customize to specific applications.  They trade reduced customization for increased ease of use.
 
-Creating a new domain language costs too much.  Buying an existing commercial testing tool that includes a domain-specific language is winning only half of the battle.  Many of these tools 
+---++ References
+
+[1] Selenium
+[2] FITnesse
+[3] Jargon file
+[4] Brett's vendorscript paper 
