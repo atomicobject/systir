@@ -3,10 +3,11 @@
 require 'test/unit'
 require 'find'
 
-unless ENV['PROJ_HOME']
-  puts "PROJ_HOME not set"
-	exit 1
-end
+proj_dir = File.dirname(__FILE__)
+
+# include src / test directories in require '*.rb' loadpath
+$LOAD_PATH << "#{proj_dir}/src"
+$LOAD_PATH << "#{proj_dir}/test"
 
 # Hack-ish method of scanning files for TestCase class names.
 # (See comment in the seek loop down below for explanation)
@@ -19,7 +20,7 @@ def each_testcase_name(fname)
 end
 
 suite = Test::Unit::TestSuite.new
-Find.find("#{File.dirname(__FILE__)}/test") do |fname|
+Find.find("#{proj_dir}/test") do |fname|
 	if fname =~ /.*test_.*\.rb$/
 		require fname
 		
