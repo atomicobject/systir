@@ -1,0 +1,18 @@
+---+ Domain-Specific System Test Automation with SYSTIR
+(summary)
+In this paper we present a new system testing framework that supports a handful of recent ideas in the realm of automated system testing. 
+
+---++ What we have now
+(Intro, common tools)
+Modern frameworks for automated system testing often fall into two categories.  Some are capture/replay based systems that allow testing of application by recording a users action during the capture phase and allowing automated replay and verification of the results.  Other systems provide a vendor-specific language to write high-level scripts that describe system test cases.  Many are hybrids of the two, recording scripts using a high-level language that allows hand customization or even data-driven parameterization.
+
+---++ What makes ruby a good choice
+Ruby has become known for it's applicability in domain-specific languages.  Ruby's dynamic typing and object-oriented self-modification allows it's users to quickly create customized languages that read like plain english.  It's =perl=-inspired relaxed syntax allows for freedoms  that aid in readability without sacrificing capability.  no semicolons, parentheses.
+
+---++ DSLs
+(define, explain, applications)
+
+---++ 
+As test-driven development gains support we see a slew of commercial testing tools that feature vendor-specific scripting languages.  These languages are typically hard to customize to specific applications.  They trade reduced customization for increased ease of use.
+
+Creating a new domain language costs too much.  Buying an existing commercial testing tool that includes a domain-specific language is winning only half of the battle.  Many of these tools 
