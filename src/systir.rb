@@ -42,7 +42,7 @@ module Systir
 	# contain user code written to support more macro-fied testing scripts.
 	#
 	class LanguageDriver < Test::Unit::TestCase
-		include CatchallMethod
+		#include CatchallMethod
 
 		# (INTERNAL USE) 
 		# Sneaky trick to expose the private mix-in method +add_assertion+ from
@@ -154,7 +154,7 @@ module Systir
 
 		#
 		# Construct a new Helper with a back reference to the language driver.
-		# NOTE: the +driver+ argument is optional if you utilize +driver=+
+		# NOTE: the +driver+ argument is optional if you utilize <code>driver=</code>
 		# or Systir::LanguageDriver.associate_helper
 		# 
 		def initialize(driver=nil)
