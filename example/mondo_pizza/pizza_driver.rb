@@ -1,4 +1,4 @@
-require 'ao_watir'
+require 'watir'
 require 'soap/rpc/standaloneServer'
 require 'systir'
 

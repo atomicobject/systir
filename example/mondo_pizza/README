@@ -1,0 +1,17 @@
+WARNING:  For the purposes of demonstration, a local copy of systir.rb is
+included with this example in the lib directory.  This is a hint towards how
+to layout your system test directory.  Please be sure you get the latest
+systir.rb from the src directory in this repository.
+
+This is an example of how to use Systir and Watir
+and Watir::Simple.
+
+The example website runs from a single ruby script.
+
+To see the tests run:
+
+> ruby run.rb
+
+This assumes you have installed WATIR using the normal method as described in it's package.
+
+
