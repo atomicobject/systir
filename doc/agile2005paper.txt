@@ -1,6 +1,6 @@
 ---+ Domain-Specific System Test Automation with SYSTIR
 
-In this paper we present a new system testing framework that encourages a handful of recent ideas in the realm of automated system testing.
+We present a new system testing framework that features tight coupling between developers writing test fixtures and those with the domain knowledge of the system under test.  The combination of developer and tester allows us to write system integration tests with more joy.
 
 ---++ What We Have Now
 
