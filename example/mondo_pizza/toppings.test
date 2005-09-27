@@ -1,7 +1,15 @@
 login
 
-assert_username "Karlin"
+username_should_be 'Tester Karlin'
 
 click_on_make_a_pizza
 
-add_topping "Pineapple"
+add_topping 'Pineapple'
+
+go_back
+
+click_on_view_queue
+
+click_on_first_pizza
+
+see_topping 'Pineapple'
