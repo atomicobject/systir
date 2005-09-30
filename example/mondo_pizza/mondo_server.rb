@@ -1,4 +1,5 @@
 require 'mini_server'
+require 'yaml'
 
 class MondoPizzaServer < MiniServer
 
@@ -8,9 +9,9 @@ class MondoPizzaServer < MiniServer
 	def login
 		user = params['loginname']
 		pass = params['password']
-		if !user.nil? && Passwd.new[user] == pass then 
+		if !user.nil? && Passwd.new[user] == pass 
 			@user = user
-			render 'menu'
+			redirect :menu
 		end
 	end
 
@@ -18,9 +19,18 @@ class MondoPizzaServer < MiniServer
 	end
 	
 	def make
+		session['toppings'] ||= [['ham']]
+		@toppings = session['toppings']
+		#if request.query['add_topping']
+			#request.session['toppings'] += request
+			
+			#pizza = Pizza.new request.session['toppings'] += request.query['
+			#YAML.dump pizza, pizza_file
+		#end
 	end
 
 	def queue
+		@pizzas = [Pizza.new]
 	end
 end
 
@@ -36,4 +46,18 @@ class Passwd
 	def [](login)
 		@passwd[login]
 	end
+end
+
+class Pizza
+	
+	attr_accessor :toppings, :crust_flavor
+	
+	def initialize
+		@toppings = []
+	end
+	
+	def each_topping
+		@toppings.each {|t| yield t}
+	end
+	
 end

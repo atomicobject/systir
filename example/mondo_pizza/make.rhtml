@@ -1,0 +1,20 @@
+<h2>Letsa make a pizza!</h2>
+<% if @toppings.size > 0 %>
+  Toppings:
+	<p>
+	<% @toppings.each do |topping| %>
+		<div class="topping_list">
+	  <% topping %>
+		</div><br />
+	<% end %>
+	</p>
+<% end %>
+<form action='pizza'>
+	<p>
+		<input type="text" id="toppings_id" name="toppings" />
+		<input type="submit" id="add_topping_id" name="add_topping" 
+			value="Add it" />
+	</p>
+	<input type="submit" id="make_pizza_id" name="make_pizza" 
+		value="Make the pizza" />
+</form>
