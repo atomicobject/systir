@@ -1,9 +1,9 @@
-Here are the pizzas we're making for you:
+<h3>Here are the pizzas we're making for you:</h3>
 <br />
 <% @pizzas.each do |pizza| %>
 <div class='pizza_box'>
 	<% pizza.each_topping do |topping| %>
-		<% topping %><br />
+		<%= topping %><br />
 	<% end %>
 <% end %>
 </div>

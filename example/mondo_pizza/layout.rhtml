@@ -10,10 +10,18 @@
 		width: 50%;
 		border: 2px solid #333333;
 		padding: 2em;
+		background-color: #DDCCCC;
+	}
+	
+	#logo {
+		border: 2px solid gray;
 	}
 	
 	.topping_list {
 		border: 1px solid black;
+		padding: 2px;
+		background-color: #FFDDDD;
+		margin: 2px;
 	}
 	
 	h1 {
@@ -22,8 +30,16 @@
 		color: #2244DD;
 	}
 	
+	.pizza_box {
+		border: 1px solid black;
+		background-color: #d0d0d0;
+	}
+	
 </style>
 <body>
+<div id="logo">
+<img src="/images/logo.png" />
+</div>
 <div id="main_area">
 <%= @main_content %>
 </div>
