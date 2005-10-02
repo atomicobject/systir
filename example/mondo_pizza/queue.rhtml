@@ -1,13 +1,20 @@
-<h3>Here are the pizzas we're making for you:</h3>
-<br />
-<% @pizzas.each do |pizza| %>
-<div class='pizza_box'>
-	<h3><%= pizza.name %></h3>
-	<ul>
-	<% pizza.each_topping do |topping| %>
-		<li><%= topping %><br /></li>
+<% if @pizzas.size > 0 %>
+	<h3>Here are the pizzas we're making for you:</h3>
+	<br />
+	<% @pizzas.each do |pizza| %>
+		<div id="pizza_box">
+			<h3><%= pizza.name %></h3>
+			<ul>
+				<% pizza.each_topping do |topping| %>
+					<li><%= topping %><br /></li>
+				<% end %>
+			</ul>
+			<span id="delete_link">
+				<a href="/delete/<%= pizza.pizza_id %>">Delete</a>
+			</span>
+		</div>
 	<% end %>
-	</ul>
-	</div>
+<% else %>
+	<h3>No pizzas yet!&nbsp;&nbsp;Do you want to go <a href="/make">make</a> some?</h3>
 <% end %>
 

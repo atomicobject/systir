@@ -22,6 +22,10 @@ class MondoPizzaServer < MiniServer
 	end
 
 	def menu
+		if session[:user_sess].nil?
+			redirect :login
+		end
+
 		@name = session[:user_sess][:name]
 	end
 	
@@ -31,6 +35,11 @@ class MondoPizzaServer < MiniServer
   end
 
 	def make
+		if session[:user_sess].nil?
+			redirect :login
+		end
+		
+		@error_text = nil
 		session[:user_sess][:toppings] ||= []
 		@toppings = session[:user_sess][:toppings]
 		if request.query['add_topping'] && request.query['topping_name'] != ''
@@ -39,25 +48,36 @@ class MondoPizzaServer < MiniServer
 			$log.info "Adding topping: #{topping}"
 			redirect :make
 		elsif request.query['make_pizza']
-			if !request.query['pizza_name']
+			if request.query['pizza_name'] == ''
 				@error_text = 'You must choose a title for your new pizza creation!'
-				redirect :make
+				$log.info 'Pizza with blank name was attempted.'
+				render 'make'
 			end
-			pizza = Pizza.new session[:user_sess][:toppings]
-			pizza.name = request.query['pizza_name']
-			pizza_file = File.open "pizzas/#{pizza.object_id}.pizza", 'w', File::CREAT
-			YAML.dump pizza, pizza_file
-			pizza_file.close
-			$log.info "Wrote new pizza file #{pizza_file.path} with:\n#{pizza.inspect}\n"
+			pizza = Pizza.new(session[:user_sess][:toppings])
+			pizza.name = request.query['pizza_name'].to_s
+			pizza.make
 			redirect :menu
 		end
 	end
 
 	def queue
 		@pizzas = []
-		Dir['pizzas/*'].each do |pizza_file|
+		Dir['pizzas/*.pizza'].each do |pizza_file|
+			$log.debug pizza_file
+			next if pizza_file.nil?
 			@pizzas << YAML.load_file(pizza_file)
 		end
+		$log.info "Found #{@pizzas.inspect}"
+	end
+
+	def delete
+		pizza_file = Pizza.generate_path(path_elements[0])
+		$log.info "Deleting  pizza #{pizza_file} from disk."
+		if File.exists?(pizza_file)
+			success = File.delete pizza_file
+			$log.info "Success" if success
+		end
+		redirect :queue
 	end
 end
 
@@ -78,14 +98,34 @@ end
 
 class Pizza
 	
-	attr_accessor :name, :toppings, :crust_flavor
+	attr_accessor :name, :toppings, :crust_flavor, :pizza_id
 	
 	def initialize(list)
-		@toppings = list or []
+		if list then
+			@toppings = list
+		else
+			@toppings = []
+		end
 	end
 	
 	def each_topping
 		@toppings.each {|t| yield t}
 	end
+
+	def generate_path
+		"pizzas/#{@pizza_id}.pizza"
+	end
+
+	def Pizza.generate_path(obj_id)
+		"pizzas/#{obj_id}.pizza"
+	end
 	
+	def make
+		@pizza_id = self.object_id
+		pizza_file = File.new(self.generate_path, File::CREAT|File::TRUNC|File::RDWR)
+		$log.info "Making #{@pizza_id}.pizza..."
+		YAML.dump self, pizza_file
+		$log.info "Wrote new pizza file #{pizza_file.path} with:\n#{self.inspect}\n"
+		pizza_file.close
+	end
 end
