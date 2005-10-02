@@ -49,8 +49,9 @@ class Framework
           @mini_server.render(entry)
         end
       end
-        
+
       res['content-type'] ||= "text/html"
+			puts res['content-type']
       res.body ||= @mini_server.output
       @mini_server.reset
     end

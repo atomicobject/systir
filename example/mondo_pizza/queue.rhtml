@@ -2,9 +2,12 @@
 <br />
 <% @pizzas.each do |pizza| %>
 <div class='pizza_box'>
+	<h3><%= pizza.name %></h3>
+	<ul>
 	<% pizza.each_topping do |topping| %>
-		<%= topping %><br />
+		<li><%= topping %><br /></li>
 	<% end %>
+	</ul>
+	</div>
 <% end %>
-</div>
 

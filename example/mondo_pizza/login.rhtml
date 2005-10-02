@@ -1,8 +1,13 @@
 <h3>Please log in:</h3>
 <br>
 <font color="red"><% @error_field %></font>
-<form name="login" method="post" action="login"> Login: <input name="loginname" type="text"><br>
-Password: <input name="password" type="password"><br>
+<form name="login" method="post" action="login">
+	<table>
+		<tr><td>Login:</td><td><input name="loginname" type="text"><br></td></tr>
+		<tr><td>Password:</td><td><input name="password" type="password"></tr></td>
+	</table>
   <br>
-  <input type="submit" id="login" value="Login">
+  <tr><td><input type="submit" id="login" value="Login">
 </form>
+
+<%= @debug %>

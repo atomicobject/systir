@@ -4,15 +4,18 @@ class TestFileMarkup
 		lines = File.open(file).readlines
 		out = ""
 		lines.each do |line|
-			unless line =~ /^\s*$/
-				pieces = split_params remove_sentence_punctuation(line)
-				out += spaces_to_underlines(de_sentence(pieces[0]))
-				params = unify_quoting(pieces[1])
-				out += ' ' + params if params != ''
+			line.chomp!
+			if line =~ /^\s*$/
+				out += "\n"
+				next
 			end
+		
+			pieces = split_params remove_sentence_punctuation(line)
+			out += spaces_to_underlines(de_sentence(pieces[0]))
+			params = unify_quoting(pieces[1])
+			out += ' ' + params if params != ''
 			out += "\n"
 		end
-		puts out
 		return out
 	end
 	

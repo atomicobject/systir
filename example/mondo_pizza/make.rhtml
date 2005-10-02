@@ -1,4 +1,4 @@
-<h2>Letsa make a pizza!</h2>
+<h2>Lets make a pizza!</h2>
 <% if @toppings.size > 0 %>
   Toppings:
 	<ul>
@@ -19,3 +19,4 @@
 	<input type="submit" id="make_pizza_id" name="make_pizza" 
 		value="Make the Pizza" />
 </form>
+<span class="error"><%= @error_text %></span>

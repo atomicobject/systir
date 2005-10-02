@@ -1,9 +1,12 @@
 require 'mini_server'
 require 'yaml'
+require 'webrick/httputils'
+require 'logger'
+
+$log = Logger.new("log.txt")
 
 class MondoPizzaServer < MiniServer
-	def index
-		
+	def index		
 	end
 	
 	def login
@@ -12,34 +15,40 @@ class MondoPizzaServer < MiniServer
 		if !user.nil? && Passwd.new[user] == pass 
 			@user = user
 			name = user[0...1].upcase + user[1..user.size]
-			flash[:username] = name
+			session[:user_sess] = {:name => name}
+			$log.info "User #{name} logged on."
 			redirect :menu
 		end
 	end
 
 	def menu
-		@name = flash[:username]
+		@name = session[:user_sess][:name]
 	end
 	
 	def images
-    @response.content_type = 'image/jpeg'
-		file = path_elements[0]
-		puts "Image file: #{file}"
-		if File.exist?(file)
-			send File.read(file)
-		end
+		response['content-type'] = 'image/png'
+		send File.open('images/'+path_elements[0], 'rb').read
   end
 
 	def make
-		session[:toppings] ||= [['ham']]
-		@toppings = session[:toppings]
+		session[:user_sess][:toppings] ||= []
+		@toppings = session[:user_sess][:toppings]
 		if request.query['add_topping'] && request.query['topping_name'] != ''
-			session[:toppings] << request.query['topping_name'].to_s
+			topping = request.query['topping_name'].to_s
+			session[:user_sess][:toppings] << topping
+			$log.info "Adding topping: #{topping}"
 			redirect :make
 		elsif request.query['make_pizza']
-			pizza = Pizza.new session[:toppings]
+			if !request.query['pizza_name']
+				@error_text = 'You must choose a title for your new pizza creation!'
+				redirect :make
+			end
+			pizza = Pizza.new session[:user_sess][:toppings]
+			pizza.name = request.query['pizza_name']
 			pizza_file = File.open "pizzas/#{pizza.object_id}.pizza", 'w', File::CREAT
 			YAML.dump pizza, pizza_file
+			pizza_file.close
+			$log.info "Wrote new pizza file #{pizza_file.path} with:\n#{pizza.inspect}\n"
 			redirect :menu
 		end
 	end
@@ -69,7 +78,7 @@ end
 
 class Pizza
 	
-	attr_accessor :toppings, :crust_flavor
+	attr_accessor :name, :toppings, :crust_flavor
 	
 	def initialize(list)
 		@toppings = list or []

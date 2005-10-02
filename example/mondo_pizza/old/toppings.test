@@ -1,0 +1,7 @@
+login
+
+assert_username "Karlin"
+
+click_on_make_a_pizza
+
+add_topping "Pineapple"
