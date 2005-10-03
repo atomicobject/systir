@@ -1,15 +1,15 @@
 <% if @pizzas.size > 0 %>
-	<h3>Here are the pizzas we're making for you:</h3>
+	<h3 align="center">Here are the pizzas we're making for you:</h3>
 	<br />
 	<% @pizzas.each do |pizza| %>
 		<div id="pizza_box">
-			<h3><%= pizza.name %></h3>
+			<span id="pizza_name"><%= pizza.name %></span>
 			<ul>
 				<% pizza.each_topping do |topping| %>
 					<li><%= topping %><br /></li>
 				<% end %>
 			</ul>
-			<span id="delete_link">
+			<span id="delete_link" halign="right">
 				<a href="/delete/<%= pizza.pizza_id %>">Delete</a>
 			</span>
 		</div>

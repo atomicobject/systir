@@ -3,7 +3,7 @@
   Toppings:
 	<ul>
 	<% @toppings.each do |topping| %>
-		<div class="topping_list">
+		<div id="topping_list">
 	  <%= topping %>
 		</div>
 	<% end %>
@@ -19,4 +19,4 @@
 	<input type="submit" id="make_pizza_id" name="make_pizza" 
 		value="Make the Pizza" />
 </form>
-<span class="error"><%= @error_text %></span>
+<span id="error"><%= @error_text %></span>

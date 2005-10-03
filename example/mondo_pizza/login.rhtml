@@ -1,6 +1,5 @@
 <h3>Please log in:</h3>
 <br>
-<font color="red"><% @error_field %></font>
 <form name="login" method="post" action="login">
 	<table>
 		<tr><td>Login:</td><td><input name="loginname" type="text"><br></td></tr>
@@ -9,5 +8,4 @@
   <br>
   <tr><td><input type="submit" id="login" value="Login">
 </form>
-
-<%= @debug %>
+<span id="error"><%= @login_error %></span>

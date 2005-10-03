@@ -54,6 +54,7 @@ class MondoPizzaServer < MiniServer
 				render 'make'
 			end
 			pizza = Pizza.new(session[:user_sess][:toppings])
+			session[:user_sess][:toppings] = []
 			pizza.name = request.query['pizza_name'].to_s
 			pizza.make
 			redirect :menu
@@ -63,7 +64,6 @@ class MondoPizzaServer < MiniServer
 	def queue
 		@pizzas = []
 		Dir['pizzas/*.pizza'].each do |pizza_file|
-			$log.debug pizza_file
 			next if pizza_file.nil?
 			@pizzas << YAML.load_file(pizza_file)
 		end
@@ -98,7 +98,7 @@ end
 
 class Pizza
 	
-	attr_accessor :name, :toppings, :crust_flavor, :pizza_id
+	attr_accessor :name, :toppings, :pizza_id
 	
 	def initialize(list)
 		if list then
