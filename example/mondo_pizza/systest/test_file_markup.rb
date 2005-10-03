@@ -46,3 +46,20 @@ class TestFileMarkup
 		str.gsub '"', '\''
 	end
 end
+
+if __FILE__ == $0
+  t = TestFileMarkup.new
+	if !ARGV[0]
+	  raise "You must supply a filename to convert."
+	end
+
+	io = nil
+	if ARGV[1]
+	  io = File.new(ARGV[1], 'w', File::CREAT)
+	else
+	  io = STDOUT
+	end	
+	io.puts t.convert(ARGV[0])
+	
+end	
+	

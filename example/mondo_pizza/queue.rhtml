@@ -4,14 +4,17 @@
 	<% @pizzas.each do |pizza| %>
 		<div id="pizza_box">
 			<span id="pizza_name"><%= pizza.name %></span>
-			<ul>
-				<% pizza.each_topping do |topping| %>
-					<li><%= topping %><br /></li>
-				<% end %>
-			</ul>
-			<span id="delete_link" halign="right">
+			<% if pizza.toppings.size > 1 %>
+				<ul>
+					<% pizza.each_topping do |topping| %>
+						<li><%= topping %><br /></li>
+					<% end %>
+				</ul>
+			<% else %>(No toppings!)<br /><% end %>
+			<div align="right">
+			<span id="delete_link">
 				<a href="/delete/<%= pizza.pizza_id %>">Delete</a>
-			</span>
+			</span></div>
 		</div>
 	<% end %>
 <% else %>

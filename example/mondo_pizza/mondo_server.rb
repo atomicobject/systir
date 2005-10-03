@@ -10,14 +10,20 @@ class MondoPizzaServer < MiniServer
 	end
 	
 	def login
-		user = params['loginname']
-		pass = params['password']
-		if !user.nil? && Passwd.new[user] == pass 
-			@user = user
-			name = user[0...1].upcase + user[1..user.size]
-			session[:user_sess] = {:name => name}
-			$log.info "User #{name} logged on."
-			redirect :menu
+		@login_error = nil
+		if params['login']
+			user = params['loginname']
+			pass = params['password']
+			if !user.nil? && Passwd.new[user] == pass 
+				@user = user
+				name = user[0...1].upcase + user[1..user.size]
+				session[:user_sess] = {:name => name}
+				$log.info "User #{name} logged on."
+				redirect :menu
+			else
+				@login_error = "Couldn't log you in.  Please try again."
+				redirect :login
+			end
 		end
 	end
 
@@ -42,7 +48,7 @@ class MondoPizzaServer < MiniServer
 		@error_text = nil
 		session[:user_sess][:toppings] ||= []
 		@toppings = session[:user_sess][:toppings]
-		if request.query['add_topping'] && request.query['topping_name'] != ''
+		if params['add_topping'] && params['topping_name'] != ''
 			topping = request.query['topping_name'].to_s
 			session[:user_sess][:toppings] << topping
 			$log.info "Adding topping: #{topping}"

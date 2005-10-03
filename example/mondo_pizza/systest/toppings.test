@@ -1,6 +1,6 @@
 login
 
-username_should_be 'Tester Karlin'
+username_should_be 'Karlin'
 
 click_on_make_a_pizza
 
@@ -10,6 +10,7 @@ go_back
 
 click_on_view_queue
 
-click_on_first_pizza
+number_of_pizzas_should_be 1
 
-see_topping 'Pineapple'
+toppings_should_be 'Pineapple'
+
