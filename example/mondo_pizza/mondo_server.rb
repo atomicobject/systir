@@ -45,24 +45,31 @@ class MondoPizzaServer < MiniServer
 			redirect :login
 		end
 		
+		name = flash[:pizza_name] || request.query['pizza_name'].to_s
+		@pizza_name = name
+
+		store_name = proc {
+			flash[:pizza_name] = request.query['pizza_name'].to_s if request.query['pizza_name']
+		}
+		
 		@error_text = nil
 		session[:user_sess][:toppings] ||= []
 		@toppings = session[:user_sess][:toppings]
 		if params['add_topping'] && params['topping_name'] != ''
 			topping = request.query['topping_name'].to_s
 			session[:user_sess][:toppings] << topping
-			$log.info "Adding topping: #{topping}"
+			store_name.call 
 			redirect :make
 		elsif request.query['make_pizza']
-			if request.query['pizza_name'] == ''
+			if name == ''
 				@error_text = 'You must choose a title for your new pizza creation!'
-				$log.info 'Pizza with blank name was attempted.'
+				$log.warn 'Pizza with blank name was attempted.'
 				render 'make'
 			end
 			pizza = Pizza.new(session[:user_sess][:toppings])
-			session[:user_sess][:toppings] = []
-			pizza.name = request.query['pizza_name'].to_s
+			pizza.name = name
 			pizza.make
+			session[:user_sess][:toppings] = []
 			redirect :menu
 		end
 	end
@@ -71,17 +78,26 @@ class MondoPizzaServer < MiniServer
 		@pizzas = []
 		Dir['pizzas/*.pizza'].each do |pizza_file|
 			next if pizza_file.nil?
-			@pizzas << YAML.load_file(pizza_file)
+			pizza = YAML.load_file pizza_file
+			@pizzas << pizza
+			if !(pizza_file =~ /#{pizza.pizza_id}/)
+				$log.warn "Found orphaned pizza file #{pizza_file}, deleting!"
+				File.delete pizza_file
+			end
 		end
-		$log.info "Found #{@pizzas.inspect}"
 	end
 
 	def delete
 		pizza_file = Pizza.generate_path(path_elements[0])
-		$log.info "Deleting  pizza #{pizza_file} from disk."
+		log_msg = "Deleting  pizza #{pizza_file} from disk:"
+		success = false
 		if File.exists?(pizza_file)
 			success = File.delete pizza_file
-			$log.info "Success" if success
+		end
+		if success
+			$log.info "#{log_msg} Success"
+		else
+			$log.warn "#{log_msg} Failed!"
 		end
 		redirect :queue
 	end
@@ -108,9 +124,11 @@ class Pizza
 	
 	def initialize(list)
 		if list then
-			@toppings = list
+			@toppings = list.clone
+			$log.info "Constructing pizza with #{list.inspect}"
 		else
 			@toppings = []
+			$log.info "Constructing empty pizza."
 		end
 	end
 	

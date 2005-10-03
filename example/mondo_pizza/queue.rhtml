@@ -4,7 +4,7 @@
 	<% @pizzas.each do |pizza| %>
 		<div id="pizza_box">
 			<span id="pizza_name"><%= pizza.name %></span>
-			<% if pizza.toppings.size > 1 %>
+			<% if pizza.toppings.size > 0 %>
 				<ul>
 					<% pizza.each_topping do |topping| %>
 						<li><%= topping %><br /></li>

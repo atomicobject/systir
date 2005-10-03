@@ -11,11 +11,13 @@
 <% end %>
 <form action="make">
 	<p>
+		Add a topping:<br />
 		<input type="text" id="topping_id" name="topping_name" />
 		<input type="submit" id="add_topping_id" name="add_topping" 
 			value="Add It" />
 	</p>
-	<input type="text" id="pizza_name_id" name="pizza_name" />&nbsp;
+	Give your creation a name:<br />
+	<input type="text" id="pizza_name_id" name="pizza_name" value="<%= @pizza_name %>"/>&nbsp;
 	<input type="submit" id="make_pizza_id" name="make_pizza" 
 		value="Make the Pizza" />
 </form>
