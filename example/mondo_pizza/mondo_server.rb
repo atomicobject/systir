@@ -12,7 +12,7 @@ class MondoPizzaServer < MiniServer
 	def login
 		@login_error = nil
 		if params['login']
-			user = params['loginname']
+			user = params['login']
 			pass = params['password']
 			if !user.nil? && Passwd.new[user] == pass 
 				@user = user

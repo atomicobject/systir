@@ -2,10 +2,10 @@
 <br />
 <form name="login" method="post" action="login">
 	<table>
-		<tr><td>Login:</td><td><input name="loginname" type="text" /><br /></td></tr>
-		<tr><td>Password:</td><td><input name="password" type="password" /></tr></td>
+		<tr><td>Login:</td><td><input id="login_id" name="login" type="text" /><br /></td></tr>
+		<tr><td>Password:</td><td><input id="password_id" name="password" type="password" /></tr></td>
 	</table>
   <br />
-  <tr><td><input type="submit" id="login_id" name="login" value="Login" />
+  <tr><td><input type="submit" id="login_button_id" name="login" value="Login" />
 </form>
 <span id="error"><%=@login_error%></span>
