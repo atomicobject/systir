@@ -3,7 +3,7 @@
 	<br />
 	<% @pizzas.each do |pizza| %>
 		<div id="pizza_box">
-			<span id="pizza_name"><%= pizza.name %></span>
+			<div id="pizza_name"><%= pizza.name %></div>
 			<% if pizza.toppings.size > 0 %>
 				<ul>
 					<% pizza.each_topping do |topping| %>
@@ -17,6 +17,7 @@
 			</span></div>
 		</div>
 	<% end %>
+  <br /><a href="menu" id="menu_link_id">Go Back</a>
 <% else %>
 	<h3>No pizzas yet!&nbsp;&nbsp;Do you want to go <a href="/make">make</a> some?</h3>
 <% end %>
