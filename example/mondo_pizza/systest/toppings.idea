@@ -4,13 +4,17 @@ Username should be "Karlin"
 
 Click on Make a Pizza.
 
-Add topping "Pineapple"
+Add a topping "Pineapple"
 
-Go back.
+Add a topping "Ham"
+
+Name the pizza "Hawaiian"
+
+Make the pizza
 
 Click on View Queue
 
 Number of pizzas should be 1
 
-Toppings should be "Pineapple"
+Toppings should be "Pineapple", "Ham"
 

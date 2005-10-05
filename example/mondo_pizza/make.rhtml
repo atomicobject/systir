@@ -1,4 +1,4 @@
-<h2>Lets make a pizza!</h2>
+<h1>Lets make a pizza!</h1>
 <% if @toppings.size > 0 %>
   Toppings:
 	<ul>
@@ -17,7 +17,8 @@
 			value="Add It" />
 	</p>
 	Give your creation a name:<br />
-	<input type="text" id="pizza_name_id" name="pizza_name" value="<%= @pizza_name %>"/>&nbsp;
+	<input type="text" id="pizza_name_id" name="pizza_name" value="<%= @pizza_name %>"/>
+  <hr />
 	<input type="submit" id="make_pizza_id" name="make_pizza" 
 		value="Make the Pizza" />
 </form>

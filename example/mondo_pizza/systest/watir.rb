@@ -1,38 +1,3 @@
-=begin
-  license
-  ---------------------------------------------------------------------------
-  Copyright (c) 2004-2005, Paul Rogers and Bret Pettichord
-  All rights reserved.
-  
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-  
-  1. Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-  
-  3. Neither the names Paul Rogers, Bret Pettichord nor the names of contributors to
-  this software may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
-  IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  --------------------------------------------------------------------------
-  (based on BSD Open Source License)
-=end
-
 #  This is Watir, Web Application Testing In Ruby
 #  Home page is http://wtr.rubyforge.org
 #
@@ -2602,14 +2567,14 @@ end
         end
 
         # returns the n'th Body as a Watir TableBody object
-        def []n
+        def [](n)
             assert_exists
             return TableBody.new(@container, :direct, ole_table_body_at_index(n))
         end
 
         # returns an ole table body
         def ole_table_body_at_index(n)
-            return @o.tBodies[(n-1).to_s]
+            return @o.tBodies[ (n-1).to_s ]
         end
 
         # iterates through each of the TableBodies in the Table. Yields a TableBody object
@@ -3545,7 +3510,7 @@ end
     # this class accesses the file fields in the document as a collection
     # it would normally only be accessed by the Watir::Container#file_fields method
     #
-    class FileFields< ElementCollections
+    class FileFields < ElementCollections
         def element_class; FileField; end
         def length
             get_length_of_input_objects(["file"])

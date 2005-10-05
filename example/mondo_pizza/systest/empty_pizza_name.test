@@ -1,0 +1,16 @@
+login
+username_should_be 'Karlin'
+
+click_on_make_a_pizza
+make_the_pizza
+expect_pizza_needs_a_name_error
+
+add_a_topping 'Air'
+add_a_topping 'Ether'
+name_the_pizza ''
+make_the_pizza
+expect_pizza_needs_a_name_error
+
+
+
+

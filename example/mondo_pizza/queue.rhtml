@@ -1,6 +1,5 @@
 <% if @pizzas.size > 0 %>
-	<h3 align="center">Here are the pizzas we're making for you:</h3>
-	<br />
+	<h1 align="center">These are the queued pizzas:</h1>
 	<% @pizzas.each do |pizza| %>
 		<div id="pizza_box">
 			<div id="pizza_name"><%= pizza.name %></div>

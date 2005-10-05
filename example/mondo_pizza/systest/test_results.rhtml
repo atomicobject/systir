@@ -1,0 +1,39 @@
+<html>
+<title>Systir Test Results</title>
+<style>
+	#details { 
+    font-style: monospaced;
+    background-color: #ffe0e0;
+    border: 2px solid red;
+  }
+  
+  #summary {
+    background-color: #F2F2F2;
+  }
+  
+  #error_count {
+    color: #FFFF00;
+    background-color: #FCC8C8;
+  }
+  
+  #failure_count {
+    background-color: #FCC8C8;
+  }
+  
+  #pass {
+    background-color: #C8FCC8;
+  }
+  
+</style>
+<body>
+<div id="details">
+<%= details %>
+</div>
+<br/>
+<div id="summary">
+<%= totals %>
+<span id="error_count"><%= errors %>
+<span id="failures_count"><%= failures %>
+
+</body>
+</html>

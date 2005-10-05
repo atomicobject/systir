@@ -1,0 +1,16 @@
+Login.
+Username should be "Karlin"
+
+Click on Make a Pizza.
+Make the pizza.
+Expect Pizza Needs a Name error.
+
+Add a topping "Air"
+Add a topping "Ether"
+Name the pizza ""
+Make the pizza.
+Expect Pizza Needs a Name error.
+
+
+
+

@@ -4,13 +4,17 @@ username_should_be 'Karlin'
 
 click_on_make_a_pizza
 
-add_topping 'Pineapple'
+add_a_topping 'Pineapple'
 
-go_back
+add_a_topping 'Ham'
+
+name_the_pizza 'Hawaiian'
+
+make_the_pizza
 
 click_on_view_queue
 
 number_of_pizzas_should_be 1
 
-toppings_should_be 'Pineapple'
+toppings_should_be 'Pineapple', 'Ham'
 
