@@ -36,6 +36,7 @@
 require 'test/unit/assertions'
 require 'watir'
 
+module Watir
 # = Description
 # Watir::Simple is a simple wrapper around the Watir module.  It provides a
 # similar set of operations while simplifying them and removing as much syntax
@@ -48,8 +49,7 @@ require 'watir'
 # Most action methods in Watir::Simple will automatically wait for the browser
 # not to be busy before and after they perform the specified action.
 #
-# revision: $Revision$
-module Watir
+# revision: $Revision: 1.1 $
   module Simple
 
   # Open up a browser and point it at a certain URL.
