@@ -17,4 +17,3 @@ click_on_view_queue
 number_of_pizzas_should_be 1
 
 toppings_should_be 'Pineapple', 'Ham'
-
