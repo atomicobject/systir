@@ -6,13 +6,9 @@ click_on_make_a_pizza
 make_the_pizza
 expect_pizza_needs_a_name_error
 
-#_now_try_with_an_blank_name
-add_a_topping 'Air'
-add_a_topping 'Ether'
+#_now_try_with_a_blank_name
+add_a_topping 'Pepperoni'
+add_a_topping 'Eggs'
 name_the_pizza ' '
 make_the_pizza
 expect_pizza_needs_a_name_error
-
-
-
-
