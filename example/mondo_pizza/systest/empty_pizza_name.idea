@@ -7,12 +7,8 @@ Make the pizza.
 Expect Pizza Needs a Name error.
 
 # Now try with an blank name
-Add a topping "Air"
-Add a topping "Ether"
+Add a topping "Pepperoni"
+Add a topping "Eggs"
 Name the pizza " "
 Make the pizza.
 Expect Pizza Needs a Name error.
-
-
-
-
