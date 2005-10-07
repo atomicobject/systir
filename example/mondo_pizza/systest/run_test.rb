@@ -17,7 +17,7 @@ end
 if File.extname(testfile) == '.idea'
 	puts "Converting idea file to test file..."
 	outfile = testfile.gsub('.idea', '.test')
-  FileUtils.rm outfile
+  FileUtils.rm outfile if File.exist?(outfile)
 	converter = TestFileMarkup.new
 	
 	out = converter.convert(testfile)

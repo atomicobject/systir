@@ -6,11 +6,11 @@ require 'logger'
 $log = Logger.new("log.txt")
 
 class MondoPizzaServer < MiniServer
-	def index		
+	def index	
 	end
 	
 	def login
-		@login_error = nil
+		#@login_error = nil
 		if params['login']
 			user = params['login']
 			pass = params['password']
@@ -21,8 +21,8 @@ class MondoPizzaServer < MiniServer
 				$log.info "User #{name} logged on."
 				redirect :menu
 			else
-				@login_error = "Couldn't log you in.  Please try again."
-				redirect :login
+				@login_error = "Invalid login.  Please try again."
+				render 'login'
 			end
 		end
 	end
@@ -61,7 +61,7 @@ class MondoPizzaServer < MiniServer
 			store_name.call 
 			redirect :make
 		elsif request.query['make_pizza']
-			if name == ''
+			if name == '' || name =~ /^\s$/
 				@error_text = 'You must choose a title for your new pizza creation!'
 				$log.warn 'Pizza with blank name was attempted.'
 				render 'make'

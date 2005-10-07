@@ -6,7 +6,7 @@ Click on Make a Pizza.
 Make the pizza.
 Expect Pizza Needs a Name error.
 
-# Now try with an blank name
+# Now try with a blank name
 Add a topping "Pepperoni"
 Add a topping "Eggs"
 Name the pizza " "
