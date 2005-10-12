@@ -9,9 +9,17 @@ class PizzaDriver < Systir::LanguageDriver
     goto_login_page
     @login_page.login_as 'karlin', 'secret'
 		@menu_page = helper :MenuPage
-		@menu_page.assert_shown
   end
 	
+	def login_as_invalid_user
+		goto_login_page
+		@login_page.login_as 'nobody', 'nothin'
+	end
+	
+	def expect_an_invalid_login_error
+		@login_page.expect_error(/invalid login/i)
+	end
+		
   def username_should_be(name)
     @menu_page.assert_username_shown name
   end
@@ -19,7 +27,6 @@ class PizzaDriver < Systir::LanguageDriver
   def click_on_make_a_pizza
     @menu_page.make_a_pizza
     @maker_page = helper :MakePizzaPage
-		@maker_page.assert_shown
   end
 
   def add_a_topping(topping)

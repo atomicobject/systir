@@ -1,15 +1,17 @@
+$LOAD_PATH << File.dirname(__FILE__) + '/lib'
 require 'watir'
 require 'watir/watir_simple'
 require 'soap/rpc/standaloneServer'
 require 'fileutils'
-$LOAD_PATH << File.dirname(__FILE__) + '/lib'
 require 'systir'
 
 class PizzaHelper
+  include Systir::Helper
   include Watir::Simple
 	include Test::Unit::Assertions
-
-	def initialize
+  
+	def initialize(driver)
+    super
 		assert_shown if self.respond_to?('assert_shown')
     @watir = @@browser
 	end
@@ -30,7 +32,7 @@ class PizzaDriver < Systir::LanguageDriver
 	end
 
 	def helper(helper_sym)
-		return self.class.const_get(helper_sym.to_s).new
+		return self.class.const_get(helper_sym.to_s).new(self)
 	end
 
 	def teardown

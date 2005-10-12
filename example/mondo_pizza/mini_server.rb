@@ -1,5 +1,7 @@
 require 'webrick'
 require 'erb'
+require 'logger'
+$log = Logger.new("log.txt")
 
 #
 # mini_server.rb
@@ -17,6 +19,7 @@ class Framework
 
   def launch
     @s = WEBrick::HTTPServer.new( :Port => 4444 )
+		@s.mount_proc "/favicon.ico" do end
     @s.mount_proc '/' do |req,res|
       @mini_server = @server_factory.create_instance
 			@global_session[:flash].tick # age and purge 
