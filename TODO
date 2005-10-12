@@ -1,6 +1,4 @@
-* systir.rb
-  
-* Helper should have an associate_helper() method that calls driver.associate_helper(obj)
+* Helper should have an associate_helper() method that calls driver.associate_helper(obj) (PARTIALLY DONE: see helper method in mondo_pizza/pizza_driver.rb)
 
 * BLOCK_ASSERTIONS and ALLOW_MISSING_METHODS magic are stored
   in the proto/lib/test/system.rb file.
