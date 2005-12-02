@@ -7,38 +7,53 @@ class TestFileMarkup
 	def convert(file)
 		lines = File.open(file).readlines
 		out = ""
+		@in_block = false
 		lines.each_with_index do |line, i|
 			line.chomp!
 			if line =~ /^\s*$/
 				out += "\n"
 				next
 			end
+
+
 		
+			# Detect input indentation before we horse this line:
+			indented = line =~ /^\s+/
+			end_block out  if @in_block and !indented
+
 			pieces = split_params remove_sentence_punctuation(line)
-			out += spaces_to_underlines(de_sentence(pieces[0]))
+			block_starter = pieces[-1] =~ /do\s*$/
+
+			newline = spaces_to_underlines(de_sentence(pieces[0]))
+
+			# Dig the params
 			params = unify_quoting(pieces[1])
-			out += ' ' + params if params != ''
-      
-      #TODO:  Try to detect blocks
-      #if line =~ /^\s+/ && lines[i+1] =~ /^[^\s]/
-      #  out += "\nend\n"
-      #elsif line =~ /^[^\s]/ && lines[i+1] =~ /^\s+/
-      #  out += " do\n"
-      #else      
-        out += "\n"
-      #end
-      
+			newline += ' ' + params if params != ''
+
+			# Indentation
+			indent = @in_block ? "  " : ""
+
+			# Append new line to output
+			out += "#{indent}#{newline}\n";
+
+			# Was that a block starter line?
+			if block_starter
+				@in_block = true
+			end
 		end
+		end_block(out) if @in_block
 		return out
 	end
 	
 	def remove_sentence_punctuation(str)
-		str.sub(/[,\.]$/, '')
+		str.gsub!(/[:]$/, ' do')
+		str.gsub!(/[,\.]$/, '')
+		str.gsub!(/[:]/, '')
+		str
 	end
 	
 	def spaces_to_underlines(str)
 		str.rstrip.gsub /\s/, '_'
-    #str.gsub /^_*/, ' '
 	end
 	
 	# remove caps	
@@ -60,6 +75,12 @@ class TestFileMarkup
 		str.gsub '"', '\''
 	end
 
+	def end_block(str)
+		str.chop!
+		str << "; end\n"
+		@in_block = false
+	end
+
 end
 
 if __FILE__ == $0
@@ -72,6 +93,7 @@ if __FILE__ == $0
 	output = ARGV[1] ? File.new(ARGV[1], 'w', 0644) : STDOUT
 	
   output.puts converter.convert(ARGV[0])
+
 	output.close
 end	
 	
