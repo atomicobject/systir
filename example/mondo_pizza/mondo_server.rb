@@ -58,10 +58,10 @@ class MondoPizzaServer < MiniServer
 		if params['add_topping'] && params['topping_name'] != ''
 			topping = request.query['topping_name'].to_s
 			session[:user_sess][:toppings] << topping
-			store_name.call 
+			store_name.call
 			redirect :make
 		elsif request.query['make_pizza']
-			if name == '' || name =~ /^\s$/
+			if name == '' || name =~ /^\s*$/
 				@error_text = 'You must choose a title for your new pizza creation!'
 				$log.warn 'Pizza with blank name was attempted.'
 				render 'make'
