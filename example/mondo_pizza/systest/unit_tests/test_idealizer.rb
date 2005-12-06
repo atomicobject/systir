@@ -63,6 +63,25 @@ class TestIdealizer < Test::Unit::TestCase
 	end
 
 	def test_de_sentence
-		flunk "not done"		
+    sentences = [
+			'This is here.',
+			' that iS There . ',
+			'T t,'
+		]
+
+		exp = [
+			'this is here',
+			'that is there ',
+			't t'
+		]
+
+		testme = Idealizer.new
+		got = []
+		sentences.each do | s |
+			got << testme.de_sentence(s)
+		end
+
+		assert_equal exp, got, "de-sentence failed"
+
 	end
 end
