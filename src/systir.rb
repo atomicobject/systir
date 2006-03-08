@@ -31,6 +31,9 @@ require 'test/unit'
 require 'test/unit/ui/console/testrunner'
 require 'find'
 
+# This disables the auto-run-at-exit feature inside test/unit.rb:
+Test::Unit.run = true 
+
 #
 # Systir contains classes and modules to support writing and launching
 # high-level test scripts.
