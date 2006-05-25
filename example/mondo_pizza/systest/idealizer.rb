@@ -1,8 +1,12 @@
 
 # A simple english-to-test-script converter
 #
-# Example:
-#  >ruby test_file_markup.rb 
+# Examples:
+#   (goes to STDOUT)
+#  >ruby idealizer.rb login.idea
+#  
+#   (goes to login.test) 
+#  >ruby idealizer.rb login.idea login.test
 class Idealizer
 	def convert(file)
 		lines = File.open(file).readlines

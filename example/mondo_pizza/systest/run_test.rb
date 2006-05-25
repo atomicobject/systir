@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-require 'test_file_markup'
+require 'idealizer'
 require 'fileutils'
 
 # Manually configure the Ruby library load path to ensure example robustness
