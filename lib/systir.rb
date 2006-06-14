@@ -40,6 +40,8 @@ Test::Unit.run = true
 #
 module Systir
 
+	VERSION = '0.0.1.4.5'
+
 	#
 	# Systir::LanguageDriver is a special derivative of TestCase designed to
 	# contain user code written to support more macro-fied testing scripts.
