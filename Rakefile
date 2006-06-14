@@ -39,8 +39,8 @@ task :release => [:set_version, :testall] do
 	version = ENV['version'].strip
 	raise "Please specify version" unless version
 	proj_root = File.expand_path(File.dirname(__FILE__))
-#	require proj_root + '/lib/systir'
-#	raise "Wrong VERSION written to systir.rb" unless version == Systir::VERSION
+	require proj_root + '/lib/systir'
+	raise "Wrong VERSION written to systir.rb" unless version == Systir::VERSION
 
 	require 'fileutils'
 	include FileUtils::Verbose

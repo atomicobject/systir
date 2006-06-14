@@ -31,13 +31,14 @@ require 'test/unit'
 require 'test/unit/ui/console/testrunner'
 require 'find'
 
+# This disables the auto-run-at-exit feature inside test/unit.rb:
+Test::Unit.run = true 
+
 #
 # Systir contains classes and modules to support writing and launching
 # high-level test scripts.
 #
 module Systir
-
-	VERSION = '0.0.1'
 
 	#
 	# Systir::LanguageDriver is a special derivative of TestCase designed to
@@ -92,7 +93,7 @@ module Systir
 	# and produces a TestSuite ready for execution
 	class Builder
 		def initialize(driver_class)
-		  @driver_class = driver_class
+			@driver_class = driver_class
 		end
 
 		# Read contents from_file, wrap text in 'def', 
@@ -106,14 +107,14 @@ module Systir
 			# the driver class:
 			text = File.readlines(from_file)
 			text = "def test_#{base_minus_ext}\n#{text}\nend\n";
-			
+
 			# Dynamically define the method:
 			@driver_class.class_eval(text, base, 0)
 		end
 
 		# Produce the test suite for our driver class
 		def suite
-		  @driver_class.suite
+			@driver_class.suite
 		end
 
 		def suite_for_directory(dir)
@@ -122,7 +123,7 @@ module Systir
 					import_test path 
 				end
 				if File.directory? path
-				  next
+					next
 				end
 			end
 			return suite
@@ -214,7 +215,7 @@ module Systir
 		def driver=(dr)
 			@_driver = dr
 		end
-		
+
 		# == Description
 		# Installs a back-reference from this Driver instance into the specified Helper
 		# and returns a reference to that Helper.  Typically thismethod is called
@@ -246,7 +247,7 @@ module Systir
 		end
 		alias_method :return_helper, :associate_helper
 		alias_method :hand_off_to, :associate_helper
-		
+
 		# 
 		# Redirects assertion counting into our owning LanguageDriver.
 		# Assertions module will automatically attempt to store the count
@@ -261,3 +262,4 @@ module Systir
 		end
 	end
 end
+
