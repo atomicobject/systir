@@ -37,7 +37,7 @@ require 'find'
 #
 module Systir
 
-	VERSION = '6.8'
+	VERSION = '0.1.1.1'
 
 	#
 	# Systir::LanguageDriver is a special derivative of TestCase designed to
