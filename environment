@@ -1,5 +1,0 @@
-export PROJ_HOME=`pwd`
-export RUBYLIB=$PROJ_HOME/src:$PROJ_HOME/test
-
-alias mktags='find -name "*.rb" | xargs ctags -f $PROJ_HOME/tags'
-mktags
