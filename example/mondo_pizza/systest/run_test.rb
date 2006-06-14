@@ -3,7 +3,7 @@ require 'idealizer'
 require 'fileutils'
 
 # Manually configure the Ruby library load path to ensure example robustness
-$LOAD_PATH << File.dirname(__FILE__) + "/lib"
+$LOAD_PATH << File.dirname(__FILE__) + "/../../../lib"
 
 require 'systir'
 require 'pizza_driver'

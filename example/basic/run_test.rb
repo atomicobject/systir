@@ -2,7 +2,7 @@
 
 # Manually configure the Ruby library load path to ensure example robustness
 this_dir = File.dirname(__FILE__)
-$LOAD_PATH << "#{this_dir}/../../src"
+$LOAD_PATH << "#{this_dir}/../../lib"
 $LOAD_PATH << "#{this_dir}"
 
 require 'systir'
