@@ -29,10 +29,19 @@
 
 require 'test/unit'
 require 'test/unit/ui/console/testrunner'
+require 'test/unit/ui/xml/testrunner'
 require 'find'
 
 # This disables the auto-run-at-exit feature inside test/unit.rb:
 Test::Unit.run = true 
+
+module Test
+	module Unit
+	  class TestResult
+			attr_reader :failures, :errors, :assertion_count
+		end
+	end
+end
 
 #
 # Systir contains classes and modules to support writing and launching
@@ -96,6 +105,7 @@ module Systir
 	class Builder
 		def initialize(driver_class)
 			@driver_class = driver_class
+			remove_test_methods
 		end
 
 		# Read contents from_file, wrap text in 'def', 
@@ -142,6 +152,15 @@ module Systir
 			end
 			return suite
 		end
+
+		def remove_test_methods
+			methods = @driver_class.public_instance_methods.select { |m| 
+				m =~ /^test_/ 
+			}
+			methods.each do |method|
+				@driver_class.send(:undef_method,method)
+			end
+		end
 	end
 
 	# = Description
@@ -149,11 +168,17 @@ module Systir
 	#
 	class Launcher
 
+		def initialize(runner=:console)
+			@runner = runner
+		end
+
 		# 
 		# Find and run all the system test scripts in the given directory.
 		# Tests are identified by the .test file extension.
 		#
 		def find_and_run_all_tests(driver_class, dir='.')
+			raise 'dir cannot be nil' if dir.nil?
+			raise 'dir does not exist' unless File.directory?(dir)
 			b = Builder.new(driver_class)
 			execute b.suite_for_directory(dir)
 		end
@@ -162,6 +187,8 @@ module Systir
 		# Run a specific test.  
 		#
 		def run_test(driver_class, filename)
+			raise 'filename cannot be nil' if filename.nil?
+			raise 'filename does not exist' unless File.exists?(filename)
 			b = Builder.new(driver_class)
 			execute b.suite_for_file(filename)
 		end
@@ -170,6 +197,8 @@ module Systir
 		# Run a specific list of tests
 		#
 		def run_test_list(driver_class, file_list)
+			raise 'file_list cannot be nil' if file_list.nil?
+			raise 'file_list cannot be empty' if file_list.empty?
 			b = Builder.new(driver_class)
 			execute b.suite_for_list(file_list)
 		end
@@ -178,7 +207,14 @@ module Systir
 		# Use console test runner to execute the given suite
 		#
 		def execute(suite)
-			Test::Unit::UI::Console::TestRunner.run(suite)
+			case @runner
+			when :console
+				Test::Unit::UI::Console::TestRunner.run(suite)
+			when :xml
+				Test::Unit::UI::XML::TestRunner.run(suite)
+			else
+				raise "don't know anything about runner: [#{@runner}]"
+			end
 		end
 	end
 

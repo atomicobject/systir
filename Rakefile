@@ -13,7 +13,7 @@ end
 
 Rake::RDocTask.new do |rdoc|
 	rdoc.rdoc_dir = 'doc'
-	rdoc.title    = "CMock: Expectation-based mock object library " 
+	rdoc.title    = 'Systir: System Testing in Ruby'
 	rdoc.options << '--line-numbers' << '--inline-source' << '-A cattr_accessor=object'
 	rdoc.rdoc_files.include('lib/**/*.rb')
 end
