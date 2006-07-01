@@ -1,14 +1,20 @@
+require File.dirname(__FILE__) + '/config/environment'
 require 'rake'
-require 'rake/testtask'
 require 'rake/rdoctask'
+require 'spec/rake/spectask'
 
-task :default => [ :testall ]
+task :default => [ :spec ]
 
-desc "Run the unit tests in test/unit"
-Rake::TestTask.new("testall") do |t|
-	t.libs << "test"
-	t.pattern = 'test/**/*_test.rb'
-	t.verbose = true
+desc "Run all specifications"
+Spec::Rake::SpecTask.new('spec') do |s|
+	s.spec_files = FileList['spec/*_spec.rb']
+end
+
+desc "Generate code coverage statistics from specifications"
+Spec::Rake::SpecTask.new('coverage') do |s|
+	s.spec_files = FileList['spec/*_spec.rb']
+	s.rcov = true
+	s.ruby_opts = %w{--exclude ".*vendor\/.*" --exclude ".*config\/.*" --exclude ".*spec\/.*"}
 end
 
 Rake::RDocTask.new do |rdoc|

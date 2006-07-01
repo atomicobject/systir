@@ -1,17 +1,6 @@
 
 require File.dirname(__FILE__) + '/helper'
 
-module JustForMe
-	def test_dir
-		File.dirname(__FILE__) + "/more"
-	end
-
-	def test(path)
-		test_dir + "/#{path}.test"
-	end
-end
-include JustForMe
-
 class BirdDriver < Systir::LanguageDriver
 	def setup
 		assert true
@@ -45,6 +34,14 @@ end
 context 'Using drivers and helpers' do
 	setup do
 		@launcher = Systir::Launcher.new
+
+		def test_dir
+			File.dirname(__FILE__) + "/more"
+		end
+
+		def test(path)
+			test_dir + "/#{path}.test"
+		end
 	end
 
 	specify 'tests should execute within the context of the driver' do

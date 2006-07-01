@@ -31,16 +31,18 @@ require 'test/unit'
 require 'test/unit/ui/console/testrunner'
 require 'test/unit/ui/xml/testrunner'
 require 'find'
+require 'stringio'
 
 # This disables the auto-run-at-exit feature inside test/unit.rb:
 Test::Unit.run = true 
 
 module Test
-	module Unit
-	  class TestResult
-			attr_reader :failures, :errors, :assertion_count
-		end
-	end
+  module Unit
+    class TestResult
+      attr_reader :failures, :errors, :assertion_count
+			attr_accessor :output
+    end
+  end
 end
 
 #
@@ -49,255 +51,278 @@ end
 #
 module Systir
 
-	VERSION = '0.0.1.4.5'
+  VERSION = '0.0.1.4.5'
 
-	#
-	# Systir::LanguageDriver is a special derivative of TestCase designed to
-	# contain user code written to support more macro-fied testing scripts.
-	#
-	class LanguageDriver < Test::Unit::TestCase
+  #
+  # Systir::LanguageDriver is a special derivative of TestCase designed to
+  # contain user code written to support more macro-fied testing scripts.
+  #
+  class LanguageDriver < Test::Unit::TestCase
 
-		# == Description
-		# Installs a back-reference from this Driver instance into the specified Helper
-		# and returns a reference to that Helper.  Typically thismethod is called
-		# on the same line you return the helper from once it's built.
-		#
-		# == Params
-		# +helper+ :: The Helper instance you're handing control over to
-		#
-		# == Return
-		# The same +helper+ reference that was sent in as a parameter.
-		# 
-		# == Details
-		#
-		# Since Helpers are usually built as support for domain-level syntax,
-		# they usually require a direct reference to macro functions built into
-		# the driver.  Additionally, the Helper may need to make assertions
-		# defined in the driver, or test/unit itself, and only the Driver may
-		# count assertions; the Helper must use a special internal implementation
-		# of 'add_assertion' in order to increment the test's assertion count.
-		#
-		# Some aliases have been added to aid readability
-		#
-		def associate_helper(helper)
-			unless helper.respond_to? :driver=
-				raise "helper doesn't support 'driver=' method"
-			end
-			helper.driver = self
-			return helper
-		end
-		alias_method :return_helper, :associate_helper
-		alias_method :hand_off_to, :associate_helper
+    # == Description
+    # Installs a back-reference from this Driver instance into the specified Helper
+    # and returns a reference to that Helper.  Typically thismethod is called
+    # on the same line you return the helper from once it's built.
+    #
+    # == Params
+    # +helper+ :: The Helper instance you're handing control over to
+    #
+    # == Return
+    # The same +helper+ reference that was sent in as a parameter.
+    # 
+    # == Details
+    #
+    # Since Helpers are usually built as support for domain-level syntax,
+    # they usually require a direct reference to macro functions built into
+    # the driver.  Additionally, the Helper may need to make assertions
+    # defined in the driver, or test/unit itself, and only the Driver may
+    # count assertions; the Helper must use a special internal implementation
+    # of 'add_assertion' in order to increment the test's assertion count.
+    #
+    # Some aliases have been added to aid readability
+    #
+    def associate_helper(helper)
+      unless helper.respond_to? :driver=
+        raise "helper doesn't support 'driver=' method"
+      end
+      helper.driver = self
+      return helper
+    end
+    alias_method :return_helper, :associate_helper
+    alias_method :hand_off_to, :associate_helper
 
-		# (INTERNAL USE) 
-		# Sneaky trick to expose the private mix-in method +add_assertion+ from
-		# Test::Unit::Assertions.  Helpers derivatives that make assertions are
-		# able to have them counted because of this method.  
-		# (See associate_helper.)
-		def collect_assertion
-			add_assertion
-		end
-	end
+    # (INTERNAL USE) 
+    # Sneaky trick to expose the private mix-in method +add_assertion+ from
+    # Test::Unit::Assertions.  Helpers derivatives that make assertions are
+    # able to have them counted because of this method.  
+    # (See associate_helper.)
+    def collect_assertion
+      add_assertion
+    end
+  end
 
-	# = Description 
-	#	Imports test scripts into the given driver class
-	# and produces a TestSuite ready for execution
-	class Builder
-		def initialize(driver_class)
-			@driver_class = driver_class
-			remove_test_methods
-		end
+  # = Description 
+  #  Imports test scripts into the given driver class
+  # and produces a TestSuite ready for execution
+  class Builder
+    def initialize(driver_class)
+      @driver_class = driver_class
+      remove_test_methods
+    end
 
-		# Read contents from_file, wrap text in 'def', 
-		# add the resulting code as a new method on the target driver class
-		def import_test(from_file)
-			# Determine test and file names
-			base = File.basename(from_file)
-			base_minus_ext = base.sub(/\.test$/, '')
+    # Read contents from_file, wrap text in 'def', 
+    # add the resulting code as a new method on the target driver class
+    def import_test(from_file)
+      # Determine test and file names
+      base = File.basename(from_file)
+      base_minus_ext = base.sub(/\.test$/, '')
 
-			# Transform the test script into a test method inside
-			# the driver class:
-			text = File.readlines(from_file)
-			text = "def test_#{base_minus_ext}\n#{text}\nend\n";
+      # Transform the test script into a test method inside
+      # the driver class:
+      text = File.readlines(from_file)
+      text = "def test_#{base_minus_ext}\n#{text}\nend\n";
 
-			# Dynamically define the method:
-			@driver_class.class_eval(text, base, 0)
-		end
+      # Dynamically define the method:
+      @driver_class.class_eval(text, base, 0)
+    end
 
-		# Produce the test suite for our driver class
-		def suite
-			@driver_class.suite
-		end
+    # Produce the test suite for our driver class
+    def suite
+      @driver_class.suite
+    end
 
-		def suite_for_directory(dir)
-			Find.find(dir) do |path|
-				if File.basename(path) =~ /\.test$/
-					import_test path 
-				end
-				if File.directory? path
-					next
-				end
-			end
-			return suite
-		end
+    def suite_for_directory(dir)
+      Find.find(dir) do |path|
+        if File.basename(path) =~ /\.test$/
+          import_test path 
+        end
+        if File.directory? path
+          next
+        end
+      end
+      return suite
+    end
 
-		def suite_for_file(filename)
-			import_test filename
-			return suite
-		end
+    def suite_for_file(filename)
+      import_test filename
+      return suite
+    end
 
-		def suite_for_list(file_list)
-			file_list.each do |path|
-				import_test path
-			end
-			return suite
-		end
+    def suite_for_list(file_list)
+      file_list.each do |path|
+        import_test path
+      end
+      return suite
+    end
 
-		def remove_test_methods
-			methods = @driver_class.public_instance_methods.select { |m| 
-				m =~ /^test_/ 
-			}
-			methods.each do |method|
-				@driver_class.send(:undef_method,method)
-			end
-		end
-	end
+    def remove_test_methods
+      methods = @driver_class.public_instance_methods.select { |m| 
+        m =~ /^test_/ 
+      }
+      methods.each do |method|
+        @driver_class.send(:undef_method,method)
+      end
+    end
+  end
 
-	# = Description
-	# Launcher is the utility for launching Systir test scripts.
-	#
-	class Launcher
+  # = Description
+  # Launcher is the utility for launching Systir test scripts.
+  #
+  class Launcher
 
-		def initialize(runner=:console)
-			@runner = runner
-		end
+    def initialize(args={})
+			@stdout = args[:stdout].nil? ? true : args[:stdout]
+      @runner = :console
+    end
 
-		# 
-		# Find and run all the system test scripts in the given directory.
-		# Tests are identified by the .test file extension.
-		#
-		def find_and_run_all_tests(driver_class, dir='.')
-			raise 'dir cannot be nil' if dir.nil?
-			raise 'dir does not exist' unless File.directory?(dir)
-			b = Builder.new(driver_class)
-			execute b.suite_for_directory(dir)
-		end
+    # 
+    # Find and run all the system test scripts in the given directory.
+    # Tests are identified by the .test file extension.
+    #
+    def find_and_run_all_tests(driver_class, dir='.')
+      raise 'dir cannot be nil' if dir.nil?
+      raise 'dir does not exist' unless File.directory?(dir)
+      b = Builder.new(driver_class)
+      execute b.suite_for_directory(dir)
+    end
 
-		#
-		# Run a specific test.  
-		#
-		def run_test(driver_class, filename)
-			raise 'filename cannot be nil' if filename.nil?
-			raise 'filename does not exist' unless File.exists?(filename)
-			b = Builder.new(driver_class)
-			execute b.suite_for_file(filename)
-		end
+    #
+    # Run a specific test.  
+    #
+    def run_test(driver_class, filename)
+      raise 'filename cannot be nil' if filename.nil?
+      raise 'filename does not exist' unless File.exists?(filename)
+      b = Builder.new(driver_class)
+      execute b.suite_for_file(filename)
+    end
 
-		#
-		# Run a specific list of tests
-		#
-		def run_test_list(driver_class, file_list)
-			raise 'file_list cannot be nil' if file_list.nil?
-			raise 'file_list cannot be empty' if file_list.empty?
-			b = Builder.new(driver_class)
-			execute b.suite_for_list(file_list)
-		end
+    #
+    # Run a specific list of tests
+    #
+    def run_test_list(driver_class, file_list)
+      raise 'file_list cannot be nil' if file_list.nil?
+      raise 'file_list cannot be empty' if file_list.empty?
+      b = Builder.new(driver_class)
+      execute b.suite_for_list(file_list)
+    end
 
-		#
-		# Use console test runner to execute the given suite
-		#
-		def execute(suite)
-			case @runner
-			when :console
-				Test::Unit::UI::Console::TestRunner.run(suite)
-			when :xml
-				Test::Unit::UI::XML::TestRunner.run(suite)
-			else
-				raise "don't know anything about runner: [#{@runner}]"
-			end
-		end
-	end
+    #
+    # Use console test runner to execute the given suite
+    #
+    def execute(suite)
+      buffer = StringIO.new
+			ios = []
+			ios << STDOUT if @stdout
+			ios << buffer
+      io = MethodMulticaster.new(ios)
+			level = Test::Unit::UI::NORMAL
+
+      result = case @runner
+        when :console
+          Test::Unit::UI::Console::TestRunner.new(suite, level, io).start
+        when :xml
+          Test::Unit::UI::XML::TestRunner.new(suite, level, io).start
+        else
+          raise "don't know anything about runner: [#{@runner}]"
+      end
+      buffer.rewind
+      result.output = buffer.read
+      result
+    end
+  end
+
+  class MethodMulticaster #:nodoc:
+    def initialize(targets)
+      @targets = targets
+    end
+
+    def method_missing(method,*args)
+      @targets.each do |target|
+        target.send(method,*args)
+      end
+    end
+  end
 
 
-	# = DESCRIPTION 
-	# Systir::Helper is a module intended for mixing-in to classes defined 
-	# to assist a project-specific Systir::LanguageDriver.
-	# 
-	#
-	module Helper
-		include Test::Unit::Assertions
+  # = DESCRIPTION 
+  # Systir::Helper is a module intended for mixing-in to classes defined 
+  # to assist a project-specific Systir::LanguageDriver.
+  # 
+  #
+  module Helper
+    include Test::Unit::Assertions
 
-		#
-		# Construct a new Helper with a back reference to the language driver.
-		# NOTE: the +driver+ argument is optional if you utilize <code>driver=</code>
-		# or Systir::LanguageDriver.associate_helper
-		# 
-		def initialize(driver=nil)
-			@_driver = driver
-		end
+    #
+    # Construct a new Helper with a back reference to the language driver.
+    # NOTE: the +driver+ argument is optional if you utilize <code>driver=</code>
+    # or Systir::LanguageDriver.associate_helper
+    # 
+    def initialize(driver=nil)
+      @_driver = driver
+    end
 
-		#
-		# Returns a reference to our owning LanguageDriver instance.
-		#
-		def driver
-			unless @_driver
-				raise "Implementation error: helper has no back reference to the language driver!" 
-			end
-			return @_driver
-		end
+    #
+    # Returns a reference to our owning LanguageDriver instance.
+    #
+    def driver
+      unless @_driver
+        raise "Implementation error: helper has no back reference to the language driver!" 
+      end
+      return @_driver
+    end
 
-		#
-		# Sets the owning reference to a LanguageDriver.
-		# This method is used by Systir::LanguageDriver#associate_helper.
-		#
-		def driver=(dr)
-			@_driver = dr
-		end
+    #
+    # Sets the owning reference to a LanguageDriver.
+    # This method is used by Systir::LanguageDriver#associate_helper.
+    #
+    def driver=(dr)
+      @_driver = dr
+    end
 
-		# == Description
-		# Installs a back-reference from this Driver instance into the specified Helper
-		# and returns a reference to that Helper.  Typically thismethod is called
-		# on the same line you return the helper from once it's built.
-		#
-		# == Params
-		# +helper+ :: The Helper instance you're handing control over to
-		#
-		# == Return
-		# The same +helper+ reference that was sent in as a parameter.
-		# 
-		# == Details
-		#
-		# Since Helpers are usually built as support for domain-level syntax,
-		# they usually require a direct reference to macro functions built into
-		# the driver.  Additionally, the Helper may need to make assertions
-		# defined in the driver, or test/unit itself, and only the Driver may
-		# count assertions; the Helper must use a special internal implementation
-		# of 'add_assertion' in order to increment the test's assertion count.
-		#
-		# Some aliases have been added to aid readability
-		#
-		def associate_helper(helper)
-			unless helper.respond_to? :driver=
-				raise "helper doesn't support 'driver=' method"
-			end
-			helper.driver = self.driver
-			return helper
-		end
-		alias_method :return_helper, :associate_helper
-		alias_method :hand_off_to, :associate_helper
+    # == Description
+    # Installs a back-reference from this Driver instance into the specified Helper
+    # and returns a reference to that Helper.  Typically thismethod is called
+    # on the same line you return the helper from once it's built.
+    #
+    # == Params
+    # +helper+ :: The Helper instance you're handing control over to
+    #
+    # == Return
+    # The same +helper+ reference that was sent in as a parameter.
+    # 
+    # == Details
+    #
+    # Since Helpers are usually built as support for domain-level syntax,
+    # they usually require a direct reference to macro functions built into
+    # the driver.  Additionally, the Helper may need to make assertions
+    # defined in the driver, or test/unit itself, and only the Driver may
+    # count assertions; the Helper must use a special internal implementation
+    # of 'add_assertion' in order to increment the test's assertion count.
+    #
+    # Some aliases have been added to aid readability
+    #
+    def associate_helper(helper)
+      unless helper.respond_to? :driver=
+        raise "helper doesn't support 'driver=' method"
+      end
+      helper.driver = self.driver
+      return helper
+    end
+    alias_method :return_helper, :associate_helper
+    alias_method :hand_off_to, :associate_helper
 
-		# 
-		# Redirects assertion counting into our owning LanguageDriver.
-		# Assertions module will automatically attempt to store the count
-		# within a Helper otherwise, leading to incorrect results.
-		#
-		private
-		def add_assertion
-			unless driver.respond_to? :collect_assertion
-				raise "Implementation error: driver needs a 'collect_assertion' method"
-			end
-			driver.collect_assertion
-		end
-	end
+    # 
+    # Redirects assertion counting into our owning LanguageDriver.
+    # Assertions module will automatically attempt to store the count
+    # within a Helper otherwise, leading to incorrect results.
+    #
+    private
+    def add_assertion
+      unless driver.respond_to? :collect_assertion
+        raise "Implementation error: driver needs a 'collect_assertion' method"
+      end
+      driver.collect_assertion
+    end
+  end
 end
 

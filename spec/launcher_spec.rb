@@ -1,17 +1,6 @@
 
 require File.dirname(__FILE__) + '/helper'
 
-module JustForMe
-	def test_dir
-		File.dirname(__FILE__) + "/testdir"
-	end
-
-	def test(path)
-		test_dir + "/#{path}.test"
-	end
-end
-include JustForMe
-
 class ShaqDriver < Systir::LanguageDriver
 	def setup
 		assert true
@@ -22,17 +11,74 @@ class ShaqDriver < Systir::LanguageDriver
 	end
 end
 
-#def test_dir
-#	File.dirname(__FILE__) + "/testdir"
-#end
-#
-#def test(path)
-#	test_dir + "/#{path}.test"
-#end
+context 'Various output options' do
+	setup do
+		def test_dir
+			File.dirname(__FILE__) + "/testdir"
+		end
+
+		def test(path)
+			test_dir + "/#{path}.test"
+		end
+
+		@output_file = test_dir + 'output.dat'
+		@old_stdout = $stdout.dup
+		$stdout.reopen(@output_file)
+	end
+
+	teardown do
+		$stdout.reopen(@old_stdout)
+		File.delete(@output_file) if File.exists?(@output_file)
+	end
+
+	specify 'should allow disabling of output to stdout' do
+		@launcher = Systir::Launcher.new :stdout => false
+		result = @launcher.run_test_list(ShaqDriver, 
+		  [test('pass'),test('error'),test('fail')])
+		result.should_not_be_nil
+		result.should_have(1).failures
+		result.should_have(1).errors
+		result.assertion_count.should_equal 13
+		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
+		File.read(@output_file).should_be_empty
+	end
+
+	specify 'should send output to stdout by default' do
+		@launcher = Systir::Launcher.new 
+		result = @launcher.run_test_list(ShaqDriver, 
+		  [test('pass'),test('error'),test('fail')])
+		result.should_not_be_nil
+		result.should_have(1).failures
+		result.should_have(1).errors
+		result.assertion_count.should_equal 13
+		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
+		File.read(@output_file).should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
+	end
+
+	specify 'should allow outputting in xml format' do
+		@launcher = Systir::Launcher.new :stdout => false, :format => :xml
+		result = @launcher.run_test_list(ShaqDriver, 
+		  [test('pass'),test('error'),test('fail')])
+		result.should_not_be_nil
+		result.should_have(1).failures
+		result.should_have(1).errors
+		result.assertion_count.should_equal 13
+		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
+		File.read(@output_file).should_be_empty
+	end
+end
 
 context 'Accessing test results' do
 	setup do
-		@launcher = Systir::Launcher.new
+		@launcher = Systir::Launcher.new :stdout => false
+
+		def test_dir
+			File.dirname(__FILE__) + "/testdir"
+		end
+
+		def test(path)
+			test_dir + "/#{path}.test"
+		end
 	end
 
 	specify 'should be able to get at failures, errors, and assertion_count from TestResult' do
@@ -45,11 +91,28 @@ context 'Accessing test results' do
 		result.should_have(1).errors
 		result.assertion_count.should_equal 13
 	end
+
+	specify 'should be able to access test output from runner through result' do
+		result = @launcher.run_test_list(ShaqDriver, [test('pass'),test('error'),test('fail')])
+		result.should_not_be_nil
+		output = result.output
+		output.should_not_be_nil
+		output.should_match /Loaded suite ShaqDriver/m
+		output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
+	end
 end
 	
 context 'Running single test cases' do
 	setup do
-		@launcher = Systir::Launcher.new
+		@launcher = Systir::Launcher.new :stdout => false
+
+		def test_dir
+			File.dirname(__FILE__) + "/testdir"
+		end
+
+		def test(path)
+			test_dir + "/#{path}.test"
+		end
 	end
 
   specify 'should report single passing test as passing' do
@@ -90,7 +153,15 @@ end
 
 context 'Running multiple test cases' do
 	setup do
-		@launcher = Systir::Launcher.new
+		@launcher = Systir::Launcher.new :stdout => false
+
+		def test_dir
+			File.dirname(__FILE__) + "/testdir"
+		end
+
+		def test(path)
+			test_dir + "/#{path}.test"
+		end
 	end
 
 	specify 'should only run two tests for the same file once' do
