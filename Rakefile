@@ -26,7 +26,7 @@ Rake::RDocTask.new do |rdoc|
 end
 
 desc "Set version number"
-task :set_version do
+task :set_version => :spec do
 	version = ENV['version']
 	raise "Please specify version" unless version
 
@@ -41,8 +41,13 @@ task :set_version do
 	sh %|svn ci #{systir_file} -m "Setting version to #{version}"|
 end
 
+desc "Generate and upload api docs to rubyforge"
+task :upload_doc => :rerdoc do
+	sh "scp -r doc/* rubyforge.org:/var/www/gforge-projects/systir/"
+end
+
 desc "Create a release tar.gz file."
-task :release => [:set_version, :testall] do
+task :release => [:set_version, :upload_doc, :spec] do
 	version = ENV['version'].strip
 	raise "Please specify version" unless version
 	proj_root = File.expand_path(File.dirname(__FILE__))
