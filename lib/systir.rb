@@ -194,6 +194,18 @@ module Systir
   # Launcher is the utility for launching Systir test scripts.
   #
   class Launcher
+		#
+		# Creates a new Launcher, the following arguments may be specified in a hash
+		# 
+		# :stdout - true or false, whether to send test reporting output to stdout (default true)
+		# :format - :console or :xml, format of test reporting output (default :xml)
+		#
+		# note: output is available via the TestResult returned from the following methods:
+		# * find_and_run_all_tests
+		# * run_test
+		# * run_test_list
+		# * run_suite
+		#
     def initialize(args={})
 			@stdout = args[:stdout].nil? ? true : args[:stdout]
       @format = args[:format].nil? ? :console : args[:format]
@@ -211,7 +223,17 @@ module Systir
     end
 
     #
-    # Run a specific test.  
+    # Run a specific test, optionally providing parameters to be available 
+		# within the driver instance.
+		#
+		#   Systir::Launcher.new.run_test(MyDriver, './tests/foo.test')
+		#
+		#   Systir::Launcher.new.run_test(MyDriver, './tests/foo.test', :opt1 => 'thinger', :another => 'bar')
+		# 
+		# given parameters are available via the <tt>params</tt> method on the 
+		# driver instance which returns the hash passed to run_test.
+		#
+		# returns TestResult
     #
     def run_test(driver_class, filename, params=nil)
       raise 'filename cannot be nil' if filename.nil?
@@ -223,6 +245,8 @@ module Systir
     #
     # Run a specific list of tests
     #
+		# returns TestResult
+    #
     def run_test_list(driver_class, file_list)
       raise 'file_list cannot be nil' if file_list.nil?
       raise 'file_list cannot be empty' if file_list.empty?
@@ -231,8 +255,23 @@ module Systir
     end
 
 		#
-		# Run a suite of tests
+		# Run a suite of tests defined by a given block.
 		#
+		#   launcher.run_suite(MyDriver) do |suite|
+		#     suite.add :test => './tests/run_me_twice.test'
+		#     suite.add :test => './tests/run_me_twice.test', :name_suffix => 'other_one'
+		#     suite.add :test => './tests/specific_parameters.test', :params => {:one => 'mine', :two => 'also mine'}
+		#   end
+		#
+		# :test - path to the systir test file
+		# :name_suffix - (optional) string appended to the end of the test name in 
+		#                this suite run.this option is useful when running multiple 
+		#                tests from the same file.
+		# :params - (optional) hash of parameters to be set on the driver instance
+		#           for the execution of this test
+		#
+		# returns TestResult
+    #
 		def run_suite(driver_class)
 			b = Builder.new(driver_class)
 			suite = TestList.new
