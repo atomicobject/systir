@@ -1,0 +1,11 @@
+*0.5* (July 7th, 2006)
+
+* added this ChangeLog [Micah Alles]
+
+* rewrote tests as behaviour specifications using rspec [Micah Alles]
+
+* allow parameters to be passed to driver instances during test execution [Micah Alles]
+
+* allow suites to be built dynamically with separate parameters passed to each
+test [Micah Alles]
+
