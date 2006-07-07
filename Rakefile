@@ -8,6 +8,7 @@ task :default => [ :spec ]
 desc "Run all specifications"
 Spec::Rake::SpecTask.new('spec') do |s|
 	s.spec_files = FileList['spec/*_spec.rb']
+	s.spec_opts = %w{ -f s }
 end
 
 desc "Generate code coverage statistics from specifications"

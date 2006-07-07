@@ -70,7 +70,7 @@ module Test
               @io = File.open( fn, "w" )
               @using_stdout = false
             else
-              @io = STDOUT
+              @io = io
               @using_stdout = true
             end
             create_document

@@ -42,6 +42,15 @@ context 'Using drivers and helpers' do
 		def test(path)
 			test_dir + "/#{path}.test"
 		end
+
+		@output_file = test_dir + 'output.dat'
+		@old_stdout = $stdout.dup
+		$stdout.reopen(@output_file)
+	end
+
+	teardown do
+		$stdout.reopen(@old_stdout)
+		File.delete(@output_file) if File.exists?(@output_file)
 	end
 
 	specify 'tests should execute within the context of the driver' do

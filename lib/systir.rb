@@ -32,6 +32,7 @@ require 'test/unit/ui/console/testrunner'
 require 'test/unit/ui/xml/testrunner'
 require 'find'
 require 'stringio'
+require 'ostruct'
 
 # This disables the auto-run-at-exit feature inside test/unit.rb:
 Test::Unit.run = true 
@@ -51,13 +52,14 @@ end
 #
 module Systir
 
-  VERSION = '0.0.1.4.5'
+  VERSION = '0.4'
 
   #
   # Systir::LanguageDriver is a special derivative of TestCase designed to
   # contain user code written to support more macro-fied testing scripts.
   #
   class LanguageDriver < Test::Unit::TestCase
+		attr_accessor :params
 
     # == Description
     # Installs a back-reference from this Driver instance into the specified Helper
@@ -106,54 +108,60 @@ module Systir
   # and produces a TestSuite ready for execution
   class Builder
     def initialize(driver_class)
+			raise 'driver class must be a Systir::LanguageDriver' unless driver_class < Systir::LanguageDriver
       @driver_class = driver_class
       remove_test_methods
     end
 
     # Read contents from_file, wrap text in 'def', 
     # add the resulting code as a new method on the target driver class
-    def import_test(from_file)
-      # Determine test and file names
-      base = File.basename(from_file)
-      base_minus_ext = base.sub(/\.test$/, '')
-
+    def import_test(test)
       # Transform the test script into a test method inside
       # the driver class:
-      text = File.readlines(from_file)
-      text = "def test_#{base_minus_ext}\n#{text}\nend\n";
+      text = File.readlines(test.path)
+      text = "def test_#{test.fullname}\n#{text}\nend\n";
 
       # Dynamically define the method:
-      @driver_class.class_eval(text, base, 0)
-    end
-
-    # Produce the test suite for our driver class
-    def suite
-      @driver_class.suite
+      @driver_class.class_eval(text, File.basename(test.path), 0)
+			test_case = @driver_class.new("test_#{test.fullname}")
+			test_case.params = test.params
+			test_case
     end
 
     def suite_for_directory(dir)
+			list = TestList.new
       Find.find(dir) do |path|
         if File.basename(path) =~ /\.test$/
-          import_test path 
+          list.add :test => path 
         end
         if File.directory? path
           next
         end
       end
-      return suite
+      suite_for_test_list list
     end
 
-    def suite_for_file(filename)
-      import_test filename
-      return suite
+    def suite_for_file(filename,params=nil)
+			list = TestList.new
+			list.add :test => filename, :params => params
+			suite_for_test_list list
     end
 
     def suite_for_list(file_list)
-      file_list.each do |path|
-        import_test path
-      end
-      return suite
+			list = TestList.new
+			file_list.each do |path|
+				list.add :test => path
+			end
+			suite_for_test_list list
     end
+
+		def suite_for_test_list(test_list)
+			suite = Test::Unit::TestSuite.new(@driver_class.name)
+			test_list.tests.each do |test|
+				suite << import_test(test)
+			end
+			suite
+		end
 
     def remove_test_methods
       methods = @driver_class.public_instance_methods.select { |m| 
@@ -165,14 +173,30 @@ module Systir
     end
   end
 
+	class TestList #:nodoc:
+		attr_reader :tests
+
+		def initialize
+			@tests = []
+		end
+
+		def add(args)
+			test = OpenStruct.new
+			test.path = args[:test]
+			test.params = args[:params]
+			test.name = File.basename(test.path).sub(/\.test$/, '')
+			test.fullname = test.name + (args[:name_suffix] ? "_#{args[:name_suffix]}" : '')
+			@tests << test
+		end
+	end
+	
   # = Description
   # Launcher is the utility for launching Systir test scripts.
   #
   class Launcher
-
     def initialize(args={})
 			@stdout = args[:stdout].nil? ? true : args[:stdout]
-      @runner = :console
+      @format = args[:format].nil? ? :console : args[:format]
     end
 
     # 
@@ -189,11 +213,11 @@ module Systir
     #
     # Run a specific test.  
     #
-    def run_test(driver_class, filename)
+    def run_test(driver_class, filename, params=nil)
       raise 'filename cannot be nil' if filename.nil?
       raise 'filename does not exist' unless File.exists?(filename)
       b = Builder.new(driver_class)
-      execute b.suite_for_file(filename)
+      execute b.suite_for_file(filename,params)
     end
 
     #
@@ -206,6 +230,16 @@ module Systir
       execute b.suite_for_list(file_list)
     end
 
+		#
+		# Run a suite of tests
+		#
+		def run_suite(driver_class)
+			b = Builder.new(driver_class)
+			suite = TestList.new
+			yield suite
+			execute b.suite_for_test_list(suite)
+		end
+
     #
     # Use console test runner to execute the given suite
     #
@@ -217,14 +251,16 @@ module Systir
       io = MethodMulticaster.new(ios)
 			level = Test::Unit::UI::NORMAL
 
-      result = case @runner
+      runner = case @format
         when :console
-          Test::Unit::UI::Console::TestRunner.new(suite, level, io).start
+          Test::Unit::UI::Console::TestRunner
         when :xml
-          Test::Unit::UI::XML::TestRunner.new(suite, level, io).start
+          Test::Unit::UI::XML::TestRunner
         else
           raise "don't know anything about runner: [#{@runner}]"
       end
+
+			result = runner.new(suite, level, io).start
       buffer.rewind
       result.output = buffer.read
       result

@@ -1,73 +1,6 @@
 
 require File.dirname(__FILE__) + '/helper'
 
-class ShaqDriver < Systir::LanguageDriver
-	def setup
-		assert true
-	end
-
-	def teardown
-		assert true
-	end
-end
-
-context 'Various output options' do
-	setup do
-		def test_dir
-			File.dirname(__FILE__) + "/testdir"
-		end
-
-		def test(path)
-			test_dir + "/#{path}.test"
-		end
-
-		@output_file = test_dir + 'output.dat'
-		@old_stdout = $stdout.dup
-		$stdout.reopen(@output_file)
-	end
-
-	teardown do
-		$stdout.reopen(@old_stdout)
-		File.delete(@output_file) if File.exists?(@output_file)
-	end
-
-	specify 'should allow disabling of output to stdout' do
-		@launcher = Systir::Launcher.new :stdout => false
-		result = @launcher.run_test_list(ShaqDriver, 
-		  [test('pass'),test('error'),test('fail')])
-		result.should_not_be_nil
-		result.should_have(1).failures
-		result.should_have(1).errors
-		result.assertion_count.should_equal 13
-		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
-		File.read(@output_file).should_be_empty
-	end
-
-	specify 'should send output to stdout by default' do
-		@launcher = Systir::Launcher.new 
-		result = @launcher.run_test_list(ShaqDriver, 
-		  [test('pass'),test('error'),test('fail')])
-		result.should_not_be_nil
-		result.should_have(1).failures
-		result.should_have(1).errors
-		result.assertion_count.should_equal 13
-		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
-		File.read(@output_file).should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
-	end
-
-	specify 'should allow outputting in xml format' do
-		@launcher = Systir::Launcher.new :stdout => false, :format => :xml
-		result = @launcher.run_test_list(ShaqDriver, 
-		  [test('pass'),test('error'),test('fail')])
-		result.should_not_be_nil
-		result.should_have(1).failures
-		result.should_have(1).errors
-		result.assertion_count.should_equal 13
-		result.output.should_match /3 tests, 13 assertions, 1 failures, 1 errors/m
-		File.read(@output_file).should_be_empty
-	end
-end
-
 context 'Accessing test results' do
 	setup do
 		@launcher = Systir::Launcher.new :stdout => false
@@ -164,10 +97,10 @@ context 'Running multiple test cases' do
 		end
 	end
 
-	specify 'should only run two tests for the same file once' do
+	specify 'should only run two tests with the same filename' do
 		result = @launcher.run_test_list(ShaqDriver, [test('pass'),test('fail'),test('fail')])
 		result.should_not_be_nil
-		result.should.have(1).failures
+		result.should.have(2).failures
 		result.should.have(0).errors
 		result.passed?.should_be false
 	end
@@ -196,5 +129,14 @@ context 'Running multiple test cases' do
 	specify 'should raise error if non existent directory given' do
 		lambda { @launcher.find_and_run_all_tests(ShaqDriver, '/howhere/nohow') }.should_raise RuntimeError
 	end
+
+	specify 'should reject a driver class which does not extend Systir::LanguageDriver' do
+		lambda { @launcher.find_and_run_all_tests(NotADriver, test_dir) }.should_raise RuntimeError
+		lambda { @launcher.run_test(NotADriver, test('pass')) }.should_raise RuntimeError
+		lambda { @launcher.run_test_list(NotADriver, [test('pass'),test('fail')]) }.should_raise RuntimeError
+	end
+end
+
+class NotADriver < Test::Unit::TestCase
 end
 
