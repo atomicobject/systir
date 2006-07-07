@@ -46,7 +46,32 @@ task :upload_doc => :rerdoc do
 	sh "scp -r doc/* rubyforge.org:/var/www/gforge-projects/systir/"
 end
 
-desc "Create a release tar.gz file."
+def make_archives
+	begin
+		proj_root = File.expand_path(File.dirname(__FILE__))
+		version = ENV['version'].strip
+
+		cd proj_root
+		rm FileList["systir-#{version}.*"]
+		rm_rf 'release'
+		mkdir 'release'
+		sh "svn export . release/systir-#{version}"
+		cd 'release'
+		sh "tar cvzf ../systir-#{version}.tar.gz systir-#{version}"
+		sh "tar cvjf ../systir-#{version}.tar.bz2 systir-#{version}"
+		sh "zip -r ../systir-#{version}.zip systir-#{version}"
+	ensure
+		cd proj_root
+		rm_rf 'release'
+	end
+end
+
+desc "Create release archives"
+task :create_archives do
+	make_archives
+end
+
+desc "Create release files, upload docs to rubyforge, update the version number and tag the release."
 task :release => [:set_version, :upload_doc, :spec] do
 	version = ENV['version'].strip
 	raise "Please specify version" unless version
@@ -56,23 +81,14 @@ task :release => [:set_version, :upload_doc, :spec] do
 
 	require 'fileutils'
 	include FileUtils::Verbose
-	begin 
-		cd proj_root
+	cd proj_root
 
-		sh 'svn up'
-		status = `svn status` 
-		raise "Please clean up before releasing.\n#{status}" unless status.empty?
+	sh 'svn up'
+	status = `svn status` 
+	raise "Please clean up before releasing.\n#{status}" unless status.empty?
 
-		sh "svn cp . https://bear.atomicobject.com/svn/systir/tags/release-#{version} -m 'Releasing version #{version}'"
+	sh "svn cp . https://bear.atomicobject.com/svn/systir/tags/release-#{version} -m 'Releasing version #{version}'"
 
-		rm_rf 'release'
-		mkdir 'release'
-		sh "svn export . release/systir-#{version}"
-		cd 'release'
-		sh "tar cvzf ../systir-#{version}.tar.gz systir-#{version}"
-	ensure
-		cd proj_root
-		rm_rf 'release'
-	end
+	make_archives
 end
 
