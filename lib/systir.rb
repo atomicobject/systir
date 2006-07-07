@@ -52,7 +52,7 @@ end
 #
 module Systir
 
-  VERSION = '0.4'
+  VERSION = '0.5'
 
   #
   # Systir::LanguageDriver is a special derivative of TestCase designed to
